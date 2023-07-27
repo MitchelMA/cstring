@@ -49,7 +49,7 @@ bool stringbuilder_append_cstr(stringbuilder_t* str_builder, const char* cstr)
     return true;
 }
 
-char* stringbuilder_as_cstr(const stringbuilder_t* str_builder)
+char* stringbuilder_build_cstr(const stringbuilder_t* str_builder)
 {
     NULL_CHECK(str_builder, NULL);
 

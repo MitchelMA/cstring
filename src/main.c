@@ -10,9 +10,9 @@ int main(void)
     stringbuilder_append_cstr(&str_builder, "Hello, World!\n");
     stringbuilder_append_cstr(&str_builder, "\tIs dit niet cool?");
 
-    char* str = stringbuilder_as_cstr(&str_builder);
+    char* str = stringbuilder_build_cstr(&str_builder);
     stringbuilder_append_ch(&str_builder, '!');
-    char* str_2 = stringbuilder_as_cstr(&str_builder);
+    char* str_2 = stringbuilder_build_cstr(&str_builder);
 
     printf("Built string: %s\n", str);
     printf("\n%s\n", str_2);
