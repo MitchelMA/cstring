@@ -21,6 +21,7 @@ bool stringbuilder_clean(stringbuilder_t* str_builder)
     NULL_CHECK(str_builder, false);
 
     vector_clean(str_builder->char_vector_);
+    str_builder->char_vector_ = NULL;
     return true;
 }
 
@@ -37,14 +38,8 @@ bool stringbuilder_append_cstr(stringbuilder_t* str_builder, const char* cstr)
     NULL_CHECK(str_builder, false);
 
     const size_t len = strlen(cstr);
-    char stack_copy[len];
-    // Copy the string over excluding the null-terminator.
-    memcpy(stack_copy, cstr, len);
-
     for(size_t i = 0; i < len; i++)
-    {
-        vector_append(str_builder->char_vector_, (void*) (stack_copy + i));
-    }
+        vector_append(str_builder->char_vector_, (void*) (cstr + i));
 
     return true;
 }
