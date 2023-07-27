@@ -7,7 +7,11 @@ project(
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS "-Werror")
+
+set(CMAKE_C_FLAGS "-Wextra -Wall -Wconversion -pedantic")
+if(${CMAKE_BUILD_TYPE} MATCHES RELEASE)
+    string(APPEND CMAKE_C_FLAGS " -Werror")
+endif()
 
 set(SOURCES_DIR ./src)
 set(TOP_LEVEL_SOURCES
