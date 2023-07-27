@@ -2,10 +2,12 @@
 // Created by Mitchel on 17-7-2023.
 //
 
-#ifndef VECTOR_H__ 
+#ifndef VECTOR_H__
 #define VECTOR_H__
 
-#define VECTOR_START_CAPACITY 8
+#ifndef VECTOR_START_CAPACITY
+    #define VECTOR_START_CAPACITY 8
+#endif // start-capacity
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -17,6 +19,7 @@ typedef struct vector_* vector_t;
  * @param elem_size The size of the elements that the vector will be populated with.
  * @return A pointer to a `struct vector_` that lives on the heap.
  */
+[[nodiscard]]
 vector_t vector_create(size_t elem_size);
 /**
  * Deletes the vector and its memory-block from the heap..
@@ -122,6 +125,7 @@ bool vector_insert_to(struct vector_* vec, size_t index, void* elem);
  * @param elem_count When `0`, this value will automatically be calculated for all the elements starting from `start_index`.
  * @return
  */
+[[nodiscard]]
 vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_count);
 
 /**

@@ -7,6 +7,7 @@ project(
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_FLAGS "-Werror")
 
 set(SOURCES_DIR ./src)
 set(TOP_LEVEL_SOURCES
