@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "stringbuilder.h"
 #include "str.h"
@@ -92,6 +93,103 @@ string_t string_stoa(size_t value)
     string_t str = stringbuilder_build(&tmp);
     stringbuilder_clean(&tmp);
     return str;
+}
+
+int string_atoi(const string_t* string)
+{
+    NULL_CHECK(string, 0);
+
+    int value = 0;
+    int sign = 1;
+    size_t idx = 0;
+    char* chars = string->text_;
+
+    if(*chars == '+' || *chars == '-')
+    {
+        if(*chars++ == '-') sign = -1;
+        idx++;
+    }
+
+    while(idx < string->count_ && isdigit(*chars))
+    {
+        value *= 10;
+        value += (int) (*chars++ - '0');
+        idx++;
+    }
+
+    return value * sign;
+}
+
+long string_atol(const string_t* string)
+{
+    NULL_CHECK(string, 0L);
+
+    long value = 0;
+    int sign = 1;
+    size_t idx = 0;
+    char* chars = string->text_;
+
+    if(*chars == '+' || *chars == '-')
+    {
+        if(*chars++ == '-') sign = -1;
+        idx++;
+    }
+
+    while(idx < string->count_ && isdigit(*chars))
+    {
+        value *= 10;
+        value += (long) (*chars++ - '0');
+        idx++;
+    }
+
+    return value * sign;
+}
+
+long long string_atoll(const string_t* string)
+{
+    NULL_CHECK(string, 0LL);
+
+    long long value = 0;
+    int sign = 1;
+    size_t idx = 0;
+    char* chars = string->text_;
+
+    if(*chars == '+' || *chars == '-')
+    {
+        if(*chars++ == '-') sign = -1;
+        idx++;
+    }
+
+    while(idx < string->count_ && isdigit(*chars))
+    {
+        value *= 10;
+        value += (long long) (*chars++ - '0');
+        idx++;
+    }
+
+    return value * sign;
+}
+
+size_t string_atos(const string_t* string)
+{
+    size_t value = 0;
+    size_t idx =   0;
+    char* chars = string->text_;
+
+    if(*chars == '+' || *chars == '-')
+    {
+        chars++;
+        idx++;
+    }
+
+    while(idx < string->count_ && isdigit(*chars))
+    {
+        value *= 10;
+        value += (size_t) (*chars++ - '0');
+        idx++;
+    }
+
+    return value;
 }
 
 string_t string_add_(const string_t* str1, ...)

@@ -30,6 +30,11 @@ string_t string_lltoa(long long value);
 NODISCARD
 string_t string_stoa(size_t value);
 
+int string_atoi(const string_t* string);
+long string_atol(const string_t* string);
+long long string_atoll(const string_t* string);
+size_t string_atos(const string_t* string);
+
 NODISCARD
 string_t string_add_(const string_t* str1, ...);
 
