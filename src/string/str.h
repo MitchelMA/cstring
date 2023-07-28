@@ -19,7 +19,7 @@ bool string_clean(string_t* string);
 NODISCARD
 char* string_c_str(const string_t* string);
 void string_output(FILE* fd, const string_t* string);
-#define string_print(STR_PTR) string_output(stdout, (STR_PTR));
+#define string_print(STR_PTR) string_output(stdout, (STR_PTR))
 
 NODISCARD
 string_t string_itoa(int value);

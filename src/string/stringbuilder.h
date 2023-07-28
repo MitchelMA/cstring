@@ -31,4 +31,6 @@ void stringbuilder_ltoa(stringbuilder_t* str_builder, long value);
 void stringbuilder_lltoa(stringbuilder_t* str_builder, long long value);
 void stringbuilder_stoa(stringbuilder_t* stringbuilder, size_t value);
 
+// Todo! something with reading input from a file-descriptor/stdin
+
 #endif // STRINGBUILDER_H__
