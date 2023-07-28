@@ -5,21 +5,15 @@
 
 int main(void)
 {
-    stringbuilder_t str_builder = stringbuilder_create();
+    string_t my_str = string_create("Hello, World!\n");
+    string_t my_str2 = string_stoa(__SIZE_MAX__);
+    string_t my_str3 = string_create("\nGoedendag!\n");
+    string_t my_str4 = string_add(&my_str, &my_str2, &my_str3);
+    string_print(&my_str4);
 
-    stringbuilder_append_cstr(&str_builder, "Hello, World!\n");
-    stringbuilder_append_cstr(&str_builder, "\tIs dit niet cool?");
-
-    char* str = stringbuilder_build_cstr(&str_builder);
-    stringbuilder_append_ch(&str_builder, '!');
-    char* str_2 = stringbuilder_build_cstr(&str_builder);
-
-    printf("Built string: %s\n", str);
-    printf("\n%s\n", str_2);
-
-    stringbuilder_clean(&str_builder);
-    free(str);
-    free(str_2);
-
+    string_clean(&my_str);
+    string_clean(&my_str2);
+    string_clean(&my_str3);
+    string_clean(&my_str4);
     return EXIT_SUCCESS;
 }
