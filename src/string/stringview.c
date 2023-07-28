@@ -11,6 +11,13 @@ do                                                                              
         return (RETURN);                                                            \
 } while(0)
 
+#define NULL_CHECK_EMPTY(STR_V_PTR)                                                 \
+do                                                                                  \
+{                                                                                   \
+    if((STR_V_PTR) == NULL || (STR_V_PTR)->str_ == NULL || (STR_V_PTR)->count == 0) \
+        return;                                                                     \
+} while(0)
+
 #define NULL_CHECK_STR(STR_PTR, RETURN)                                         \
 do                                                                              \
 {                                                                               \
@@ -56,6 +63,8 @@ char* stringview_cstr(const stringview_t* stringview)
 
 void stringview_output(FILE* fd, const stringview_t* stringview)
 {
+    NULL_CHECK_EMPTY(stringview);
+
     stringbuilder_t format_builder = stringbuilder_create();
     stringbuilder_append_cstr(&format_builder, "%.");
     stringbuilder_stoa(&format_builder, stringview->count);
