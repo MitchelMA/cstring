@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "stringview.h"
 #include "stringbuilder.h"
@@ -23,6 +24,23 @@ do                                                                              
 {                                                                               \
     if((STR_PTR) == NULL || (STR_PTR)->text_ == NULL || (STR_PTR)->count_ == 0) \
         return (RETURN);                                                        \
+} while(0)
+
+#define ATON(STRINGVIEWPTR, TYPE, VALUE, SIGN, IDX, CHARS)     \
+do                                                             \
+{                                                              \
+    if(*(CHARS) == '+' || *(CHARS) == '-')                     \
+    {                                                          \
+        if(*(CHARS)++ == '-') (SIGN) = -1;                     \
+        (IDX)++;                                               \
+    }                                                          \
+                                                               \
+    while((IDX) < (STRINGVIEWPTR)->count && isdigit(*(CHARS))) \
+    {                                                          \
+        (VALUE) *= 10;                                         \
+        (VALUE) += (TYPE) (*(CHARS)++ - '0');                  \
+        (IDX)++;                                               \
+    }                                                          \
 } while(0)
 
 
@@ -61,9 +79,9 @@ char* stringview_cstr(const stringview_t* stringview)
     return copy;
 }
 
-void stringview_output(FILE* fd, const stringview_t* stringview)
+bool stringview_output(FILE* fd, const stringview_t* stringview)
 {
-    NULL_CHECK_EMPTY(stringview);
+    NULL_CHECK(stringview, false);
 
     stringbuilder_t format_builder = stringbuilder_create();
     stringbuilder_append_cstr(&format_builder, "%.");
@@ -73,4 +91,62 @@ void stringview_output(FILE* fd, const stringview_t* stringview)
     stringbuilder_clean(&format_builder);
     fprintf(fd, cstr_format, (stringview->str_->text_ + stringview->start_idx));
     free(cstr_format);
+
+    return true;
+}
+
+int stringview_atoi(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, 0);
+
+    int value =  0;
+    int sign =   1;
+    size_t idx = 0;
+    char* chars = (stringview->str_->text_ + stringview->start_idx);
+
+    ATON(stringview, int, value, sign, idx, chars);
+
+    return value * sign;
+}
+
+long stringview_atol(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, 0);
+
+    long value = 0;
+    int sign = 1;
+    size_t idx = 0;
+    char* chars = (stringview->str_->text_ + stringview->start_idx);
+
+    ATON(stringview, long, value, sign, idx, chars);
+
+    return value * sign;
+}
+
+long long stringview_atoll(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, 0);
+
+    long long value = 0;
+    int sign = 1;
+    size_t idx = 0;
+    char* chars = (stringview->str_->text_ + stringview->start_idx);
+
+    ATON(stringview, long long, value, sign, idx, chars);
+
+    return value * sign;
+}
+
+size_t stringview_atos(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, 0);
+
+    size_t value = 0;
+    int sign = 0;
+    size_t idx = 0;
+    char* chars = (stringview->str_->text_ + stringview->start_idx);
+
+    ATON(stringview, size_t, value, sign, idx, chars);
+    UNUSED(sign);
+    return value;
 }

@@ -13,6 +13,23 @@
             return (RETURN);                                                              \
     } while(0)
 
+#define ATON(STRINGPTR, TYPE, VALUE, SIGN, IDX, CHARS)      \
+do                                                          \
+{                                                           \
+    if(*(CHARS) == '+' || *(CHARS) == '-')                  \
+    {                                                       \
+        if(*(CHARS)++ == '-') (SIGN) = -1;                  \
+        (IDX)++;                                            \
+    }                                                       \
+                                                            \
+    while((IDX) < (STRINGPTR)->count_ && isdigit(*(CHARS))) \
+    {                                                       \
+        (VALUE) *= 10;                                      \
+        (VALUE) += (TYPE) (*(CHARS)++ - '0');               \
+        (IDX)++;                                            \
+    }                                                       \
+} while(0)
+
 string_t string_create(const char* c_str)
 {
     size_t len = strlen(c_str);
@@ -43,8 +60,10 @@ char* string_c_str(const string_t* string)
     return copy;
 }
 
-void string_output(FILE* fd, const string_t* string)
+bool string_output(FILE* fd, const string_t* string)
 {
+    NULL_CHECK(string, false);
+
     // building the format string.
     stringbuilder_t format_builder = stringbuilder_create();
     stringbuilder_append_cstr(&format_builder, "%."); 
@@ -55,8 +74,9 @@ void string_output(FILE* fd, const string_t* string)
 
     // using the format-string to output to the file-descriptor.
     fprintf(fd, format_cstr, string->text_);
-
     free(format_cstr);
+
+    return true;
 }
 
 string_t string_itoa(int value)
@@ -104,18 +124,7 @@ int string_atoi(const string_t* string)
     size_t idx = 0;
     char* chars = string->text_;
 
-    if(*chars == '+' || *chars == '-')
-    {
-        if(*chars++ == '-') sign = -1;
-        idx++;
-    }
-
-    while(idx < string->count_ && isdigit(*chars))
-    {
-        value *= 10;
-        value += (int) (*chars++ - '0');
-        idx++;
-    }
+    ATON(string, int, value, sign, idx, chars);
 
     return value * sign;
 }
@@ -129,18 +138,7 @@ long string_atol(const string_t* string)
     size_t idx = 0;
     char* chars = string->text_;
 
-    if(*chars == '+' || *chars == '-')
-    {
-        if(*chars++ == '-') sign = -1;
-        idx++;
-    }
-
-    while(idx < string->count_ && isdigit(*chars))
-    {
-        value *= 10;
-        value += (long) (*chars++ - '0');
-        idx++;
-    }
+    ATON(string, long, value, sign, idx, chars);
 
     return value * sign;
 }
@@ -154,18 +152,7 @@ long long string_atoll(const string_t* string)
     size_t idx = 0;
     char* chars = string->text_;
 
-    if(*chars == '+' || *chars == '-')
-    {
-        if(*chars++ == '-') sign = -1;
-        idx++;
-    }
-
-    while(idx < string->count_ && isdigit(*chars))
-    {
-        value *= 10;
-        value += (long long) (*chars++ - '0');
-        idx++;
-    }
+    ATON(string, long long, value, sign, idx, chars);
 
     return value * sign;
 }
@@ -173,22 +160,12 @@ long long string_atoll(const string_t* string)
 size_t string_atos(const string_t* string)
 {
     size_t value = 0;
+    int sign = 0;
     size_t idx =   0;
     char* chars = string->text_;
 
-    if(*chars == '+' || *chars == '-')
-    {
-        chars++;
-        idx++;
-    }
-
-    while(idx < string->count_ && isdigit(*chars))
-    {
-        value *= 10;
-        value += (size_t) (*chars++ - '0');
-        idx++;
-    }
-
+    ATON(string, size_t, value, sign, idx, chars);
+    UNUSED(sign);
     return value;
 }
 

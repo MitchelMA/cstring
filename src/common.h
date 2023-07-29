@@ -13,6 +13,6 @@
   #define NODISCARD _Check_return_
 #endif // _MSC_VER >= 1700
 
-
+#define UNUSED(VAR) (void)(VAR)
 
 #endif // COMMON_H__
