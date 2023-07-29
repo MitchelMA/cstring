@@ -1,8 +1,9 @@
 #ifndef STRINGBUILDER_H__
 #define STRINGBUILDER_H__
 
-#include <vector.h>
+#include <stdio.h>
 
+#include <vector.h>
 #include "../common.h"
 #include "str.h"
 
@@ -31,6 +32,9 @@ void stringbuilder_ltoa(stringbuilder_t* str_builder, long value);
 void stringbuilder_lltoa(stringbuilder_t* str_builder, long long value);
 void stringbuilder_stoa(stringbuilder_t* stringbuilder, size_t value);
 
-// Todo! something with reading input from a file-descriptor/stdin
+// Todo! Testing of the stringbuilder on windows and with files instead of only the stdin
+
+bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder);
+#define stringbuilder_read_console(STR_BUILDER_PTR) stringbuilder_read(stdin, (STR_BUILDER_PTR))
 
 #endif // STRINGBUILDER_H__

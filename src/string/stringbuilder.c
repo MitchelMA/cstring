@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+    #include <conio.h>
+#elif defined(__linux__)
+    #include <fcntl.h>
+#endif // os-check
+
 #include "stringbuilder.h"
 
 #define NULL_CHECK(BUILDER_PTR, RETURN)                              \
@@ -135,4 +141,45 @@ void stringbuilder_stoa(stringbuilder_t* str_builder, size_t value)
     NUMTOA(&tmp, value);
     vector_append_to(str_builder->char_vector_, tmp.char_vector_, 0, 0);
     stringbuilder_clean(&tmp);
+}
+
+bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder)
+{
+    NULL_CHECK(str_builder, false);
+    fseek(fstream, 0, SEEK_SET);
+
+    int ch = fgetc(fstream);
+    if(ch == EOF || ch == '\n')
+        return false;
+    ungetc(ch, fstream);
+
+    int filenumber = fileno(fstream);
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+
+    while(true)
+    {
+        if(_kbhit())
+        {
+            ch = fgetc(fstream)
+            if(ch == EOF)
+                break;
+            
+            vector_append(str_builder->char_vector_, (void*) &ch);
+        }
+    }
+
+#elif defined(__linux__)
+
+
+    int def_flag = fcntl(filenumber, F_GETFL, O_ACCMODE);
+
+    fcntl(filenumber, F_SETFL, O_NONBLOCK);
+    while((ch = fgetc(fstream)) != EOF)
+        vector_append(str_builder->char_vector_, (void*) &ch);
+    fcntl(filenumber, F_SETFL, def_flag);
+
+#endif // os-check
+
+    return true;
 }

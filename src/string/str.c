@@ -60,7 +60,7 @@ char* string_c_str(const string_t* string)
     return copy;
 }
 
-bool string_output(FILE* fd, const string_t* string)
+bool string_output(FILE* fstream, const string_t* string)
 {
     NULL_CHECK(string, false);
 
@@ -73,7 +73,7 @@ bool string_output(FILE* fd, const string_t* string)
     stringbuilder_clean(&format_builder);
 
     // using the format-string to output to the file-descriptor.
-    fprintf(fd, format_cstr, string->text_);
+    fprintf(fstream, format_cstr, string->text_);
     free(format_cstr);
 
     return true;

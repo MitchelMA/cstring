@@ -21,7 +21,13 @@ int main(void)
     output = stringview_atoi(&str_view);
     printf("Output from string-view: %d\n", output);
 
+    stringbuilder_read_console(&my_str_bld);
+    stringbuilder_read_console(&my_str_bld);
+    string_t input_str = stringbuilder_build(&my_str_bld);
+    string_print(&input_str);
+
     stringbuilder_clean(&my_str_bld);
     string_clean(&my_str);
+    string_clean(&input_str);
     return EXIT_SUCCESS;
 }
