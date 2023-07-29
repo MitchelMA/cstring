@@ -38,7 +38,13 @@ int main(void)
     printf("Input: ");
     stringbuilder_read_console(&str_builder);
     // removing the 'enter' input we took from the console
-    stringbuilder_dequeue(&str_builder);
+    char dequeued = stringbuilder_dequeue(&str_builder);
+    if(dequeued != '\n')
+    {
+        stringbuilder_append_ch(&str_builder, dequeued);
+        puts("");
+    }
+
     str1 = stringbuilder_build(&str_builder);
     printf("Read:  ");
     string_print(&str1);

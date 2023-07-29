@@ -284,20 +284,10 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
-    while(true)
-    {
-        if(_kbhit())
-        {
-            ch = fgetc(fstream)
-            if(ch == EOF)
-                break;
-            
-            vector_append(str_builder->char_vector_, (void*) &ch);
-        }
-    }
+    while(_fread_nolock((void*) &ch, sizeof(char), 1, fstream) == 1)
+        vector_append(str_builder->char_vector_, (void*) &ch);
 
 #elif defined(__linux__)
-
 
     int def_flag = fcntl(filenumber, F_GETFL, O_ACCMODE);
 
