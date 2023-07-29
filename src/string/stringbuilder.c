@@ -185,7 +185,7 @@ bool stringbuilder_insert_strv(stringbuilder_t* str_builder, size_t idx, const s
 
 char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx)
 {
-    return (char*) ((uintptr_t) vector_get_start_addr_(str_builder->char_vector_) + idx);
+    return ((char*) vector_get_start_addr_(str_builder->char_vector_) + idx);
 }
 
 char stringbuilder_pop(stringbuilder_t* str_builder)
