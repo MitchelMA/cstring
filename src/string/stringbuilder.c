@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
     #include <conio.h>
@@ -34,12 +35,41 @@ stringbuilder_t stringbuilder_create(void)
     return builder;
 }
 
+stringbuilder_t stringbuilder_create_from_cstr(const char* cstr)
+{
+    stringbuilder_t builder = {0};
+    builder.char_vector_ = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
+    return builder;
+}
+
+stringbuilder_t stringbuilder_create_from_str(const string_t* str)
+{
+    stringbuilder_t builder = {0};
+    builder.char_vector_ = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
+    return builder;
+}
+
+stringbuilder_t stringbuilder_create_from_strv(const stringview_t* strv)
+{
+    stringbuilder_t builder = {0};
+    builder.char_vector_ = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    return builder;
+}
+
 bool stringbuilder_clean(stringbuilder_t* str_builder)
 {
     NULL_CHECK(str_builder, false);
 
     vector_clean(str_builder->char_vector_);
     str_builder->char_vector_ = NULL;
+    return true;
+}
+
+bool stringbuilder_reset(stringbuilder_t* str_builder)
+{
+    NULL_CHECK(str_builder, false);
+    vector_clean(str_builder->char_vector_);
+    str_builder->char_vector_ = vector_create(sizeof(char));
     return true;
 }
 
@@ -71,12 +101,109 @@ bool stringbuilder_append_str(stringbuilder_t* str_builder, const string_t* stri
     return true;
 }
 
+bool stringbuilder_append_strv(stringbuilder_t* str_builder, const stringview_t* strv)
+{
+    NULL_CHECK(str_builder, false);
+    for(size_t i = 0; i < strv->count; i++)
+        vector_append(str_builder->char_vector_, 
+                     (void*) (strv->str_->text_ + strv->start_idx + i));
+    
+    return true;
+}
+
 bool stringbuilder_push_ch(stringbuilder_t* str_builder, char character)
 {
     NULL_CHECK(str_builder, false);
 
     vector_push(str_builder->char_vector_, (void*) &character);
     return true;
+}
+
+bool stringbuilder_push_cstr(stringbuilder_t* str_builder, const char* cstr)
+{
+    NULL_CHECK(str_builder, false);
+
+    vector_t tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
+    bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
+    vector_clean(tmp);
+    return pushed;
+}
+
+bool stringbuilder_push_str(stringbuilder_t* str_builder, const string_t* str)
+{
+    NULL_CHECK(str_builder, false);
+    
+    vector_t tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
+    bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
+    vector_clean(tmp);
+    return pushed;
+}
+
+bool stringbuilder_push_strv(stringbuilder_t* str_builder, const stringview_t* strv)
+{
+    NULL_CHECK(str_builder, false);
+
+    vector_t tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
+    vector_clean(tmp);
+    return pushed;
+}
+
+bool stringbuilder_insert_ch(stringbuilder_t* str_builder, size_t idx, char character)
+{
+    NULL_CHECK(str_builder, false);
+    return vector_insert_to(str_builder->char_vector_, idx, (void*) &character);
+}
+
+bool stringbuilder_insert_cstr(stringbuilder_t* str_builder, size_t idx, const char* cstr)
+{
+    NULL_CHECK(str_builder, false);
+
+    vector_t tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
+    bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
+    vector_clean(tmp);
+    return copied;
+}
+
+bool stringbuilder_insert_str(stringbuilder_t* str_builder, size_t idx, const string_t* str)
+{
+    NULL_CHECK(str_builder, false);
+    vector_t tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
+    bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
+    vector_clean(tmp);
+    return copied;
+}
+
+bool stringbuilder_insert_strv(stringbuilder_t* str_builder, size_t idx, const stringview_t* strv)
+{
+    NULL_CHECK(str_builder, false);
+    vector_t tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
+    vector_clean(tmp);
+    return copied;
+}
+
+char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx)
+{
+    return (char*) ((uintptr_t) vector_get_start_addr_(str_builder->char_vector_) + idx);
+}
+
+char stringbuilder_pop(stringbuilder_t* str_builder)
+{
+    char popped = 0;
+    NULL_CHECK(str_builder, popped);
+
+    vector_pop(str_builder->char_vector_, &popped);
+    return popped;
+}
+
+char stringbuilder_dequeue(stringbuilder_t* str_builder)
+{
+    char dequeued = 0;
+    NULL_CHECK(str_builder, dequeued);
+
+    vector_dequeue(str_builder->char_vector_, &dequeued);
+    return dequeued;
 }
 
 char* stringbuilder_build_cstr(const stringbuilder_t* str_builder)

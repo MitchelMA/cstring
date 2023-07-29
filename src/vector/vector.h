@@ -22,6 +22,13 @@ typedef struct vector_* vector_t;
  */
 NODISCARD
 vector_t vector_create(size_t elem_size);
+
+/**
+ * Creates a vector from an array.
+*/
+NODISCARD
+vector_t vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr);
+
 /**
  * Deletes the vector and its memory-block from the heap..
  * @param vec

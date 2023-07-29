@@ -62,6 +62,18 @@ vector_t vector_create(size_t elem_size)
     return vec;
 }
 
+vector_t vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr)
+{
+    vector_t vec = malloc(sizeof(struct vector_));
+    NULL_CHECK(vec);
+    vec->elem_count = elem_count;
+    vec->elem_size = elem_size;
+    vec->elem_capacity_count = calc_capacity_(elem_count);
+    vec->start_addr = malloc(vec->elem_capacity_count * vec->elem_size);
+    memcpy(vec->start_addr, start_addr, elem_size * elem_count);
+    return vec;
+}
+
 void vector_clean(struct vector_* vec)
 {
     free(vec->start_addr);

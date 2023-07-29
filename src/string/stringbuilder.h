@@ -6,6 +6,7 @@
 #include <vector.h>
 #include "../common.h"
 #include "str.h"
+#include "stringview.h"
 
 typedef struct
 {
@@ -14,13 +15,35 @@ typedef struct
 
 NODISCARD
 stringbuilder_t stringbuilder_create(void);
+NODISCARD
+stringbuilder_t stringbuilder_create_from_cstr(const char* cstr);
+NODISCARD
+stringbuilder_t stringbuilder_create_from_str(const string_t* str);
+NODISCARD
+stringbuilder_t stringbuilder_create_from_strv(const stringview_t* strv);
+
 bool stringbuilder_clean(stringbuilder_t* str_builder);
+bool stringbuilder_reset(stringbuilder_t* str_builder);
 
 bool stringbuilder_append_ch(stringbuilder_t* str_builder, char character);
 bool stringbuilder_append_cstr(stringbuilder_t* str_builder, const char* cstr);
-bool stringbuilder_append_str(stringbuilder_t* str_builder, const string_t* string);
+bool stringbuilder_append_str(stringbuilder_t* str_builder, const string_t* str);
+bool stringbuilder_append_strv(stringbuilder_t* str_builder, const stringview_t* strv);
 
 bool stringbuilder_push_ch(stringbuilder_t* str_builder, char character);
+bool stringbuilder_push_cstr(stringbuilder_t* str_builder, const char* cstr);
+bool stringbuilder_push_str(stringbuilder_t* str_builder, const string_t* str);
+bool stringbuilder_push_strv(stringbuilder_t* str_builder, const stringview_t* strv);
+
+bool stringbuilder_insert_ch(stringbuilder_t* str_builder, size_t idx, char character);
+bool stringbuilder_insert_cstr(stringbuilder_t* str_builder, size_t idx, const char* cstr);
+bool stringbuilder_insert_str(stringbuilder_t* str_builder, size_t idx, const string_t* str);
+bool stringbuilder_insert_strv(stringbuilder_t* str_builder, size_t idx, const stringview_t* strv);
+
+char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx);
+
+char stringbuilder_pop(stringbuilder_t* str_builder);
+char stringbuilder_dequeue(stringbuilder_t* str_builder);
 
 NODISCARD
 char* stringbuilder_build_cstr(const stringbuilder_t* str_builder);

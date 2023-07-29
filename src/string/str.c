@@ -174,9 +174,8 @@ string_t string_add_(const string_t* str1, ...)
     va_list args;
     va_start(args, str1);
     string_t* current_string;
-    stringbuilder_t builder = stringbuilder_create();
+    stringbuilder_t builder = stringbuilder_create_from_str(str1);
 
-    stringbuilder_append_str(&builder, str1);
     while((current_string = va_arg(args, string_t*)) != NULL)
     {
         stringbuilder_append_str(&builder, current_string);
