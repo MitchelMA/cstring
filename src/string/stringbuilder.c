@@ -3,7 +3,6 @@
 #include <stdint.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-    #include <conio.h>
     #include <windows.h>
 #elif defined(__linux__)
     #include <fcntl.h>
@@ -285,17 +284,12 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
-    // TODO!! TEST THIS ON A WINDOWS MACHINE!
+    int exit_cond = '\n';
+    if(fstream != stdin)
+        exit_cond = EOF;
 
-    HANDLE hf = _get_osfhandle(_fileno(fstream));
-    DWORD bytes_evail = 0;
-    PeekNamedPipe(hf, NULL, 0, NULL, &bytes_evail, NULL);
-    while(bytes_evail > 0)
-    {
-        ch = fgetc(fstream);
+    while((ch = fgetc(fstream)) != exit_cond)
         vector_append(str_builder->char_vector_, (void*) &ch);
-        PeekNamedPipe(hf, NULL, 0, NULL, &bytes_evail, NULL);
-    }
 
 #elif defined(__linux__)
 
