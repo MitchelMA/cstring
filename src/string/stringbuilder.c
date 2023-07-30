@@ -270,17 +270,16 @@ void stringbuilder_stoa(stringbuilder_t* str_builder, size_t value)
     stringbuilder_clean(&tmp);
 }
 
-bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder)
+bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_read_count)
 {
     NULL_CHECK(str_builder, false);
     fseek(fstream, 0, SEEK_SET);
 
+    size_t read_count = 0;
     int ch = fgetc(fstream);
-    if(ch == EOF || ch == '\n')
+    if(ch == EOF || (fstream == stdin && ch == '\n'))
         return false;
     ungetc(ch, fstream);
-
-    int filenumber = fileno(fstream);
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
@@ -288,15 +287,16 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder)
     if(fstream != stdin)
         exit_cond = EOF;
 
-    while((ch = fgetc(fstream)) != exit_cond)
+    while((ch = fgetc(fstream)) != exit_cond && read_count++ < max_read_count)
         vector_append(str_builder->char_vector_, (void*) &ch);
 
 #elif defined(__linux__)
 
+    int filenumber = fileno(fstream);
     int def_flag = fcntl(filenumber, F_GETFL, O_ACCMODE);
 
     fcntl(filenumber, F_SETFL, O_NONBLOCK);
-    while((ch = fgetc(fstream)) != EOF)
+    while((ch = fgetc(fstream)) != EOF && read_count++ < max_read_count)
         vector_append(str_builder->char_vector_, (void*) &ch);
     fcntl(filenumber, F_SETFL, def_flag);
 

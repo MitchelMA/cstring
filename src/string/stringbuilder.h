@@ -57,7 +57,7 @@ void stringbuilder_stoa(stringbuilder_t* stringbuilder, size_t value);
 
 // Todo! Testing of the stringbuilder on windows and with files instead of only the stdin
 
-bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder);
-#define stringbuilder_read_console(STR_BUILDER_PTR) stringbuilder_read(stdin, (STR_BUILDER_PTR))
+bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_read_count);
+#define stringbuilder_read_console(STR_BUILDER_PTR) stringbuilder_read(stdin, (STR_BUILDER_PTR), ~(size_t) 0)
 
 #endif // STRINGBUILDER_H__
