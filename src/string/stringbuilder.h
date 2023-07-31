@@ -53,7 +53,7 @@ string_t stringbuilder_build(const stringbuilder_t* str_builder);
 void stringbuilder_itoa(stringbuilder_t* str_builder, int value);
 void stringbuilder_ltoa(stringbuilder_t* str_builder, long value);
 void stringbuilder_lltoa(stringbuilder_t* str_builder, long long value);
-void stringbuilder_stoa(stringbuilder_t* stringbuilder, size_t value);
+void stringbuilder_stoa(stringbuilder_t* str_builder, size_t value);
 
 // Todo! Testing of the stringbuilder on windows and with files instead of only the stdin
 

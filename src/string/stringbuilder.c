@@ -233,9 +233,14 @@ string_t stringbuilder_build(const stringbuilder_t* str_builder)
 void stringbuilder_itoa(stringbuilder_t* str_builder, int value)
 {
     NULL_CHECK_EMPTY(str_builder);
+
+    bool negative = value < 0;
+    char minus = '-';
+    value = abs(value);
     stringbuilder_t tmp = stringbuilder_create();
 
     NUMTOA(&tmp, value);
+    if(negative) vector_push(tmp.char_vector_, &minus);
     vector_append_to(str_builder->char_vector_, tmp.char_vector_, 0, 0);
     stringbuilder_clean(&tmp);
 }
@@ -243,9 +248,14 @@ void stringbuilder_itoa(stringbuilder_t* str_builder, int value)
 void stringbuilder_ltoa(stringbuilder_t* str_builder, long value)
 {
     NULL_CHECK_EMPTY(str_builder);
+
+    bool negative = value < 0;
+    char minus = '-';
+    value = labs(value);
     stringbuilder_t tmp = stringbuilder_create();
 
     NUMTOA(&tmp, value);
+    if(negative) vector_push(tmp.char_vector_, &minus);
     vector_append_to(str_builder->char_vector_, tmp.char_vector_, 0, 0);
     stringbuilder_clean(&tmp);
 }
@@ -253,9 +263,14 @@ void stringbuilder_ltoa(stringbuilder_t* str_builder, long value)
 void stringbuilder_lltoa(stringbuilder_t* str_builder, long long value)
 {
     NULL_CHECK_EMPTY(str_builder);
+
+    bool negative = value < 0;
+    char minus = '-';
+    value = llabs(value);
     stringbuilder_t tmp = stringbuilder_create();
 
     NUMTOA(&tmp, value);
+    if(negative) vector_push(tmp.char_vector_, &minus);
     vector_append_to(str_builder->char_vector_, tmp.char_vector_, 0, 0);
     stringbuilder_clean(&tmp);
 }
