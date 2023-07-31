@@ -190,20 +190,29 @@ char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx)
 
 char stringbuilder_pop(stringbuilder_t* str_builder)
 {
-    char popped = 0;
+    char popped = EOF;
     NULL_CHECK(str_builder, popped);
 
-    vector_pop(str_builder->char_vector_, &popped);
+    vector_pop(str_builder->char_vector_, (void*) &popped);
     return popped;
 }
 
 char stringbuilder_dequeue(stringbuilder_t* str_builder)
 {
-    char dequeued = 0;
+    char dequeued = EOF;
     NULL_CHECK(str_builder, dequeued);
 
-    vector_dequeue(str_builder->char_vector_, &dequeued);
+    vector_dequeue(str_builder->char_vector_, (void*) &dequeued);
     return dequeued;
+}
+
+char stringbuilder_removeat(stringbuilder_t* str_builder, size_t idx)
+{
+    char removed = EOF;
+    NULL_CHECK(str_builder, removed);
+
+    vector_remove_at(str_builder->char_vector_, idx, (void*) &removed);
+    return removed;
 }
 
 char* stringbuilder_build_cstr(const stringbuilder_t* str_builder)

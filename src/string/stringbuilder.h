@@ -44,6 +44,7 @@ char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx);
 
 char stringbuilder_pop(stringbuilder_t* str_builder);
 char stringbuilder_dequeue(stringbuilder_t* str_builder);
+char stringbuilder_removeat(stringbuilder_t* str_builder, size_t idx);
 
 NODISCARD
 char* stringbuilder_build_cstr(const stringbuilder_t* str_builder);
