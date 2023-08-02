@@ -79,6 +79,23 @@ bool string_output(FILE* fstream, const string_t* string)
     return true;
 }
 
+string_t string_read(FILE* fstream, size_t max_len)
+{
+    fseek(fstream, 0, SEEK_END);
+
+    size_t file_size = ftell(fstream);
+    file_size = file_size > max_len ? max_len : file_size;
+
+    fseek(fstream, 0, SEEK_SET);
+
+    char* content = malloc(sizeof(char) * file_size);
+    if(fread(content, sizeof(char), file_size/sizeof(char), fstream) != file_size && ferror(fstream))
+    {
+        return (string_t){0, NULL};
+    }
+    return (string_t){file_size, content};
+}
+
 string_t string_itoa(int value)
 {
     stringbuilder_t tmp = stringbuilder_create();

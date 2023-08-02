@@ -6,6 +6,11 @@
 #include "string/stringview.h"
 
 void num_example(void);
+/**
+ * Returns a vector containing `long long`'s
+ * @param text
+ * @return
+ */
 NODISCARD
 vector_t text_retrieve_numbers(const string_t* text);
 

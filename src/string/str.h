@@ -22,6 +22,9 @@ bool string_output(FILE* fstream, const string_t* string);
 #define string_print(STR_PTR) string_output(stdout, (STR_PTR))
 
 NODISCARD
+string_t string_read(FILE* fstream, size_t max_len);
+
+NODISCARD
 string_t string_itoa(int value);
 NODISCARD
 string_t string_ltoa(long value);
