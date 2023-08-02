@@ -43,6 +43,7 @@ do                                                             \
     }                                                          \
 } while(0)
 
+//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
 
 stringview_t stringview_create(const string_t* string, size_t start_idx, size_t count)
 {

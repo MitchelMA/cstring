@@ -12,9 +12,13 @@ typedef struct
     char* text_;
 } string_t;
 
+static string_t string_empty = {0, NULL};
+
 NODISCARD
 string_t string_create(const char* c_str);
 bool string_clean(string_t* string);
+NODISCARD
+string_t string_copy(const string_t* src);
 #define string_add(...) string_add_(__VA_ARGS__, NULL)
 NODISCARD
 char* string_c_str(const string_t* string);
@@ -37,6 +41,8 @@ int string_atoi(const string_t* string);
 long string_atol(const string_t* string);
 long long string_atoll(const string_t* string);
 size_t string_atos(const string_t* string);
+
+bool string_compare(const string_t* str1, const string_t* str2);
 
 NODISCARD
 string_t string_add_(const string_t* str1, ...);

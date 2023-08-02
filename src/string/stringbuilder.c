@@ -28,6 +28,8 @@ do                                                                   \
     stringbuilder_push_ch((BUILDERPTR), (char)((NUM) % 10) + '0'); \
 } while(((NUM) /= 10) > 0)
 
+//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
+
 stringbuilder_t stringbuilder_create(void)
 {
     stringbuilder_t builder = {0};

@@ -30,6 +30,8 @@ do                                                          \
     }                                                       \
 } while(0)
 
+//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
+
 string_t string_create(const char* c_str)
 {
     size_t len = strlen(c_str);
@@ -48,6 +50,18 @@ bool string_clean(string_t* string)
     string->text_ = NULL;
     string->count_ = 0;
     return true;
+}
+
+string_t string_copy(const string_t* src)
+{
+    NULL_CHECK(src, string_empty);
+
+    char* copy = malloc(sizeof(char) * src->count_);
+    if(copy == NULL)
+        return string_empty;
+
+    memcpy(copy, src->text_, sizeof(char) * src->count_);
+    return (string_t){src->count_, copy};
 }
 
 char* string_c_str(const string_t* string)
@@ -81,18 +95,20 @@ bool string_output(FILE* fstream, const string_t* string)
 
 string_t string_read(FILE* fstream, size_t max_len)
 {
+    size_t file_size;
+    char* content;
+
     fseek(fstream, 0, SEEK_END);
-
-    size_t file_size = ftell(fstream);
+    file_size = ftell(fstream);
     file_size = file_size > max_len ? max_len : file_size;
-
     fseek(fstream, 0, SEEK_SET);
 
-    char* content = malloc(sizeof(char) * file_size);
+    if((content = malloc(sizeof(char) * file_size)) == NULL)
+        return string_empty;
+
     if(fread(content, sizeof(char), file_size/sizeof(char), fstream) != file_size && ferror(fstream))
-    {
-        return (string_t){0, NULL};
-    }
+        return string_empty;
+
     return (string_t){file_size, content};
 }
 
@@ -184,6 +200,25 @@ size_t string_atos(const string_t* string)
     ATON(string, size_t, value, sign, idx, chars);
     UNUSED(sign);
     return value;
+}
+
+bool string_compare(const string_t* str1, const string_t* str2)
+{
+    NULL_CHECK(str1, false);
+    NULL_CHECK(str2, false);
+
+    if(str1->count_ != str2->count_)
+        return false;
+
+    size_t len = str1->count_;
+
+    for(size_t i = 0; i < len; i++)
+    {
+        if(str1->text_[i] != str2->text_[i])
+            return false;
+    }
+
+    return true;
 }
 
 string_t string_add_(const string_t* str1, ...)
