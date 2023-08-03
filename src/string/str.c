@@ -107,7 +107,10 @@ string_t string_read(FILE* fstream, size_t max_len)
         return string_empty;
 
     if(fread(content, sizeof(char), file_size/sizeof(char), fstream) != file_size && ferror(fstream))
+    {
+        free(content);
         return string_empty;
+    }
 
     return (string_t){file_size, content};
 }
