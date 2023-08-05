@@ -12,7 +12,7 @@ typedef struct
     char* text_;
 } string_t;
 
-static string_t string_empty = {0, NULL};
+extern string_t string_empty;
 
 NODISCARD
 string_t string_create(const char* c_str);

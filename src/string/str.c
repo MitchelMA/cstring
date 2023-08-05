@@ -30,6 +30,8 @@ do                                                          \
     }                                                       \
 } while(0)
 
+string_t string_empty = {0, NULL};
+
 //Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
 
 string_t string_create(const char* c_str)
@@ -98,8 +100,14 @@ string_t string_read(FILE* fstream, size_t max_len)
     size_t file_size;
     char* content;
 
-    fseek(fstream, 0, SEEK_END);
-    file_size = ftell(fstream);
+    if(fseek(fstream, 0, SEEK_END))
+        return string_empty;
+
+    long success = ftell(fstream);
+    if(success == -1)
+        return string_empty;
+
+    file_size = (size_t) success;
     file_size = file_size > max_len ? max_len : file_size;
     fseek(fstream, 0, SEEK_SET);
 
@@ -207,8 +215,9 @@ size_t string_atos(const string_t* string)
 
 bool string_compare(const string_t* str1, const string_t* str2)
 {
-    NULL_CHECK(str1, false);
-    NULL_CHECK(str2, false);
+    if(str1 == NULL || str2 == NULL) return false;
+    if(str1->count_ == 0 && str2->count_ == 0 &&
+       str1->text_ == NULL && str2->text_ == NULL) return true;
 
     if(str1->count_ != str2->count_)
         return false;
