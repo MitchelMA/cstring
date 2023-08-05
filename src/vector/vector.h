@@ -13,7 +13,7 @@
 #include <stddef.h>
 #include "../common.h"
 
-typedef struct vector_* vector_t;
+typedef struct vector_ vector_t;
 
 /**
  * Creates a vector with elem_size as memory-block partitions.
@@ -21,38 +21,38 @@ typedef struct vector_* vector_t;
  * @return A pointer to a `struct vector_` that lives on the heap.
  */
 NODISCARD
-vector_t vector_create(size_t elem_size);
+vector_t* vector_create(size_t elem_size);
 
 /**
  * Creates a vector from an array.
 */
 NODISCARD
-vector_t vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr);
+vector_t* vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr);
 
 /**
  * Deletes the vector and its memory-block from the heap..
  * @param vec
  */
-void vector_clean(struct vector_* vec);
+void vector_clean(vector_t* vec);
 
 /**
  * Gets the amount of elements in the vector.
  * @param vec
  * @return
  */
-size_t vector_get_elem_count(const struct vector_* vec);
+size_t vector_get_elem_count(const vector_t* vec);
 /**
  * Gets the capacity of the vector.
  * @param vec
  * @return
  */
-size_t vector_get_capacity(const struct vector_* vec);
+size_t vector_get_capacity(const vector_t* vec);
 /**
  * Gets the size of a block-partition (a.k.a the size of an individual element).
  * @param vec
  * @return
  */
-size_t vector_get_elem_size(const struct vector_* vec);
+size_t vector_get_elem_size(const vector_t* vec);
 /**
  * Gets the start address of the memory-block.
  * \n\n
@@ -65,7 +65,7 @@ size_t vector_get_elem_size(const struct vector_* vec);
  * @param vec
  * @return
  */
-void* vector_get_start_addr_(const struct vector_* vec);
+void* vector_get_start_addr_(const vector_t* vec);
 
 /**
  * Retrieve a pointer to an element.\n
@@ -78,7 +78,7 @@ void* vector_get_start_addr_(const struct vector_* vec);
  * @param out
  * @return
  */
-bool vector_elem_at(const struct vector_* vec, size_t index, void** out);
+bool vector_elem_at(const vector_t* vec, size_t index, void** out);
 /**
  * As apposed to `vector_elem_at`, this function should be used when
  * the vector contains pointers to objects on the heap and has and elem_size
@@ -88,14 +88,14 @@ bool vector_elem_at(const struct vector_* vec, size_t index, void** out);
  * @param out
  * @return
  */
-bool vector_elem_at_ptr(const struct vector_* vec, size_t index, void* out);
+bool vector_elem_at_ptr(const vector_t* vec, size_t index, void* out);
 
 /**
  * Pushes an element to the top op the vector.
  * @param vec
  * @param elem
  */
-void vector_push(struct vector_* vec, void* elem);
+void vector_push(vector_t* vec, void* elem);
 /**
  * Pushes elements to the top of the vector in the order that they are presented.
  */
@@ -105,7 +105,7 @@ void vector_push(struct vector_* vec, void* elem);
  * @param vec
  * @param elem
  */
-void vector_append(struct vector_* vec, void* elem);
+void vector_append(vector_t* vec, void* elem);
 /**
  * Appends multiple elements to the end of the vector in the order that the elements are presented.
  */
@@ -119,7 +119,7 @@ void vector_append(struct vector_* vec, void* elem);
  * @param elem
  * @return
  */
-bool vector_insert_to(struct vector_* vec, size_t index, void* elem);
+bool vector_insert_to(vector_t* vec, size_t index, void* elem);
 
 /**
  * Inserts elements into the vector starting from `index` in the order that the elements are presented.
@@ -134,7 +134,7 @@ bool vector_insert_to(struct vector_* vec, size_t index, void* elem);
  * @return
  */
 NODISCARD
-vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_count);
+vector_t* vector_copy(const vector_t* vec, size_t start_index, size_t elem_count);
 
 /**
  * Copies a vector into another vector at `dst_index` from `src_index` for `elem_count` amount of items.
@@ -145,7 +145,7 @@ vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_
  * @param elem_count When `0`, this value will automatically be calculated for all the elements starting from `src_index`.
  * @return
  */
-bool vector_copy_into(struct vector_* dst, size_t dst_index, const struct vector_* src, size_t src_index,
+bool vector_copy_into(vector_t* dst, size_t dst_index, const vector_t* src, size_t src_index,
                       size_t elem_count);
 
 /**
@@ -166,14 +166,14 @@ bool vector_copy_into(struct vector_* dst, size_t dst_index, const struct vector
  * @param out
  * @return
  */
-bool vector_pop(struct vector_* vec, void* out);
+bool vector_pop(vector_t* vec, void* out);
 /**
  * Removes the last element from the vector and copies it into `out`.
  * @param vec
  * @param out
  * @return
  */
-bool vector_dequeue(struct vector_* vec, void* out);
+bool vector_dequeue(vector_t* vec, void* out);
 /**
  * Removes the element at the specified index from the vector and copies it into `out`.
  * @param vec
@@ -181,10 +181,10 @@ bool vector_dequeue(struct vector_* vec, void* out);
  * @param out
  * @return
  */
-bool vector_remove_at(struct vector_* vec, size_t index, void* out);
+bool vector_remove_at(vector_t* vec, size_t index, void* out);
 
 
-void vector_add_with_(struct vector_* vec, void(*method)(struct vector_*, void*), ...);
-bool vector_insert_ex_(struct vector_* vec, size_t start_index, ...);
+void vector_add_with_(vector_t* vec, void(*method)(vector_t*, void*), ...);
+bool vector_insert_ex_(vector_t* vec, size_t start_index, ...);
 
 #endif // VECTOR_H__
