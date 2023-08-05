@@ -32,15 +32,19 @@ do                                                          \
 
 string_t string_empty = {0, NULL};
 
-//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
 
 string_t string_create(const char* c_str)
 {
     size_t len = strlen(c_str);
+    size_t byte_count = sizeof(char) * len;
     string_t str = {0};
+
     str.count_ = len;
-    str.text_ = malloc(len);
-    memcpy(str.text_, c_str, len);
+    str.text_ = malloc(byte_count);
+    if(str.text_ == NULL)
+        return string_empty;
+
+    memcpy(str.text_, c_str, byte_count);
     return str;
 }
 
@@ -57,21 +61,26 @@ bool string_clean(string_t* string)
 string_t string_copy(const string_t* src)
 {
     NULL_CHECK(src, string_empty);
+    size_t byte_count = sizeof(char) * src->count_;
 
-    char* copy = malloc(sizeof(char) * src->count_);
+    char* copy = malloc(byte_count);
     if(copy == NULL)
         return string_empty;
 
-    memcpy(copy, src->text_, sizeof(char) * src->count_);
+    memcpy(copy, src->text_, byte_count);
     return (string_t){src->count_, copy};
 }
 
 char* string_c_str(const string_t* string)
 {
     NULL_CHECK(string, NULL);
+    size_t byte_count = sizeof(char) * string->count_;
 
-    char* copy = malloc(string->count_ + 1);
-    memcpy(copy, string->text_, string->count_);
+    char* copy = malloc(byte_count + sizeof(char));
+    if(copy == NULL)
+        return NULL;
+
+    memcpy(copy, string->text_, byte_count);
     copy[string->count_] = '\0';
     return copy;
 }

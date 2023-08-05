@@ -28,7 +28,6 @@ do                                                                   \
     stringbuilder_push_ch((BUILDERPTR), (char)((NUM) % 10) + '0'); \
 } while(((NUM) /= 10) > 0)
 
-//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
 
 stringbuilder_t stringbuilder_create(void)
 {
@@ -54,7 +53,7 @@ stringbuilder_t stringbuilder_create_from_str(const string_t* str)
 stringbuilder_t stringbuilder_create_from_strv(const stringview_t* strv)
 {
     stringbuilder_t builder = {0};
-    builder.char_vector_ = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    builder.char_vector_ = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + sizeof(char) * strv->start_idx));
     return builder;
 }
 
@@ -89,7 +88,7 @@ bool stringbuilder_append_cstr(stringbuilder_t* str_builder, const char* cstr)
 
     const size_t len = strlen(cstr);
     for(size_t i = 0; i < len; i++)
-        vector_append(str_builder->char_vector_, (void*) (cstr + i));
+        vector_append(str_builder->char_vector_, (void*) (cstr + sizeof(char) * i));
 
     return true;
 }
@@ -98,7 +97,7 @@ bool stringbuilder_append_str(stringbuilder_t* str_builder, const string_t* stri
 {
     NULL_CHECK(str_builder, false);
     for(size_t i = 0; i < string->count_; i++)
-        vector_append(str_builder->char_vector_, (void*) (string->text_ + i));
+        vector_append(str_builder->char_vector_, (void*) (string->text_ + sizeof(char) * i));
 
     return true;
 }
@@ -108,7 +107,7 @@ bool stringbuilder_append_strv(stringbuilder_t* str_builder, const stringview_t*
     NULL_CHECK(str_builder, false);
     for(size_t i = 0; i < strv->count; i++)
         vector_append(str_builder->char_vector_, 
-                     (void*) (strv->str_->text_ + strv->start_idx + i));
+                     (void*) (strv->str_->text_ + sizeof(char) * strv->start_idx + sizeof(char) * i));
     
     return true;
 }
@@ -145,7 +144,7 @@ bool stringbuilder_push_strv(stringbuilder_t* str_builder, const stringview_t* s
 {
     NULL_CHECK(str_builder, false);
 
-    vector_t* tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    vector_t* tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + sizeof(char) * strv->start_idx));
     bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
     vector_clean(tmp);
     return pushed;
@@ -187,7 +186,10 @@ bool stringbuilder_insert_strv(stringbuilder_t* str_builder, size_t idx, const s
 
 char* stringbuilder_char_at(const stringbuilder_t* str_builder, size_t idx)
 {
-    return ((char*) vector_get_start_addr_(str_builder->char_vector_) + idx);
+    if(idx > vector_get_elem_count(str_builder->char_vector_))
+        return NULL;
+
+    return ((char*) vector_get_start_addr_(str_builder->char_vector_) + sizeof(char) * idx);
 }
 
 char stringbuilder_pop(stringbuilder_t* str_builder)
@@ -221,11 +223,15 @@ char* stringbuilder_build_cstr(const stringbuilder_t* str_builder)
 {
     NULL_CHECK(str_builder, NULL);
 
-    size_t count = vector_get_elem_count(str_builder->char_vector_);
+    size_t elem_count = vector_get_elem_count(str_builder->char_vector_);
+    size_t byte_count = sizeof(char) * elem_count;
 
-    char* copy = malloc(count + 1);
-    memcpy(copy, vector_get_start_addr_(str_builder->char_vector_), count);
-    copy[count] = '\0';
+    char* copy = malloc(byte_count + 1);
+    if(copy == NULL)
+        return NULL;
+
+    memcpy(copy, vector_get_start_addr_(str_builder->char_vector_), byte_count);
+    copy[elem_count] = '\0';
     return copy;
 }
 
@@ -233,11 +239,15 @@ string_t stringbuilder_build(const stringbuilder_t* str_builder)
 {
     NULL_CHECK(str_builder, (string_t){0});
 
-    size_t count = vector_get_elem_count(str_builder->char_vector_);
+    size_t elem_count = vector_get_elem_count(str_builder->char_vector_);
+    size_t byte_count = sizeof(char) * elem_count;
 
-    char* txt = malloc(count);
-    memcpy(txt, vector_get_start_addr_(str_builder->char_vector_), count);
-    string_t str = {count, txt};
+    char* txt = malloc(byte_count);
+    if(txt == NULL)
+        return string_empty;
+
+    memcpy(txt, vector_get_start_addr_(str_builder->char_vector_), byte_count);
+    string_t str = {elem_count, txt};
     return str;
 }
 

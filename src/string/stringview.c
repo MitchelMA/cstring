@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -43,7 +44,6 @@ do                                                             \
     }                                                          \
 } while(0)
 
-//Todo! Be more pedantic with `sizeof(char)` operator. Currently not used consistently!
 
 stringview_t stringview_create(const string_t* string, size_t start_idx, size_t count)
 {
@@ -74,8 +74,14 @@ char* stringview_cstr(const stringview_t* stringview)
 {
     NULL_CHECK(stringview, NULL);
 
-    char* copy = malloc(stringview->count + 1);
-    memcpy(copy, stringview->str_->text_ + stringview->start_idx, stringview->count);
+    size_t byte_count = sizeof(char) * stringview->count;
+    uintptr_t start_addr = (uintptr_t)stringview->str_->text_ + sizeof(char) * stringview->start_idx;
+
+    char* copy = malloc(byte_count + 1);
+    if(copy == NULL)
+        return NULL;
+
+    memcpy(copy, (void*) start_addr, byte_count);
     copy[stringview->count] = '\0';
     return copy;
 }
@@ -103,7 +109,7 @@ int stringview_atoi(const stringview_t* stringview)
     int value =  0;
     int sign =   1;
     size_t idx = 0;
-    char* chars = (stringview->str_->text_ + stringview->start_idx);
+    char* chars = (stringview->str_->text_ + sizeof(char) * stringview->start_idx);
 
     ATON(stringview, int, value, sign, idx, chars);
 
@@ -117,7 +123,7 @@ long stringview_atol(const stringview_t* stringview)
     long value = 0;
     int sign = 1;
     size_t idx = 0;
-    char* chars = (stringview->str_->text_ + stringview->start_idx);
+    char* chars = (stringview->str_->text_ + sizeof(char) * stringview->start_idx);
 
     ATON(stringview, long, value, sign, idx, chars);
 
@@ -131,7 +137,7 @@ long long stringview_atoll(const stringview_t* stringview)
     long long value = 0;
     int sign = 1;
     size_t idx = 0;
-    char* chars = (stringview->str_->text_ + stringview->start_idx);
+    char* chars = (stringview->str_->text_ + sizeof(char) * stringview->start_idx);
 
     ATON(stringview, long long, value, sign, idx, chars);
 
@@ -145,7 +151,7 @@ size_t stringview_atos(const stringview_t* stringview)
     size_t value = 0;
     int sign = 0;
     size_t idx = 0;
-    char* chars = (stringview->str_->text_ + stringview->start_idx);
+    char* chars = (stringview->str_->text_ + sizeof(char) * stringview->start_idx);
 
     ATON(stringview, size_t, value, sign, idx, chars);
     UNUSED(sign);
