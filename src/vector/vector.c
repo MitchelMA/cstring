@@ -51,9 +51,9 @@ struct vector_
     void* start_addr;
 };
 
-vector_t vector_create(size_t elem_size)
+vector_t* vector_create(size_t elem_size)
 {
-    vector_t vec = malloc(sizeof(struct vector_));
+    vector_t* vec = malloc(sizeof(vector_t));
     NULL_CHECK(vec);
     vec->elem_count = 0;
     vec->elem_size = elem_size;
@@ -62,9 +62,9 @@ vector_t vector_create(size_t elem_size)
     return vec;
 }
 
-vector_t vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr)
+vector_t* vector_create_from(size_t elem_size, size_t elem_count, const void* start_addr)
 {
-    vector_t vec = malloc(sizeof(struct vector_));
+    vector_t* vec = malloc(sizeof(vector_t));
     NULL_CHECK(vec);
     vec->elem_count = elem_count;
     vec->elem_size = elem_size;
@@ -74,33 +74,33 @@ vector_t vector_create_from(size_t elem_size, size_t elem_count, const void* sta
     return vec;
 }
 
-void vector_clean(struct vector_* vec)
+void vector_clean(vector_t* vec)
 {
     free(vec->start_addr);
     free(vec);
 }
 
-size_t vector_get_elem_count(const struct vector_* vec)
+size_t vector_get_elem_count(const vector_t* vec)
 {
     return vec->elem_count;
 }
 
-size_t vector_get_capacity(const struct vector_* vec)
+size_t vector_get_capacity(const vector_t* vec)
 {
     return vec->elem_capacity_count;
 }
 
-size_t vector_get_elem_size(const struct vector_* vec)
+size_t vector_get_elem_size(const vector_t* vec)
 {
     return vec->elem_size;
 }
 
-void* vector_get_start_addr_(const struct vector_* vec)
+void* vector_get_start_addr_(const vector_t* vec)
 {
     return vec->start_addr;
 }
 
-bool vector_elem_at(const struct vector_* vec, size_t index, void** out)
+bool vector_elem_at(const vector_t* vec, size_t index, void** out)
 {
     if (index >= vec->elem_count)
         return false;
@@ -110,7 +110,7 @@ bool vector_elem_at(const struct vector_* vec, size_t index, void** out)
     return true;
 }
 
-bool vector_elem_at_ptr(const struct vector_* vec, size_t index, void* out)
+bool vector_elem_at_ptr(const vector_t* vec, size_t index, void* out)
 {
     uintptr_t* addr_holder;
     if (!vector_elem_at(vec, index, (void**) &addr_holder))
@@ -120,7 +120,7 @@ bool vector_elem_at_ptr(const struct vector_* vec, size_t index, void* out)
     return true;
 }
 
-void vector_push(struct vector_* vec, void* elem)
+void vector_push(vector_t* vec, void* elem)
 {
     INCREASE_CHECK(vec);
     uintptr_t target_move_addr = (uintptr_t) vec->start_addr + vec->elem_size;
@@ -130,7 +130,7 @@ void vector_push(struct vector_* vec, void* elem)
     vec->elem_count++;
 }
 
-void vector_append(struct vector_* vec, void* elem)
+void vector_append(vector_t* vec, void* elem)
 {
     INCREASE_CHECK(vec);
     uintptr_t addr = (uintptr_t) vec->start_addr + vec->elem_count * vec->elem_size;
@@ -138,7 +138,7 @@ void vector_append(struct vector_* vec, void* elem)
     vec->elem_count++;
 }
 
-bool vector_insert_to(struct vector_* vec, size_t index, void* elem)
+bool vector_insert_to(vector_t* vec, size_t index, void* elem)
 {
     if (index == 0)
     {
@@ -167,7 +167,7 @@ bool vector_insert_to(struct vector_* vec, size_t index, void* elem)
     return true;
 }
 
-vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_count)
+vector_t* vector_copy(const vector_t* vec, size_t start_index, size_t elem_count)
 {
     if(elem_count == 0)
         elem_count = vec->elem_count - start_index;
@@ -178,7 +178,7 @@ vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_
     uintptr_t start_copy_addr = (uintptr_t) vec->start_addr + start_index * vec->elem_size;
     size_t amount_to_copy     = elem_count * vec->elem_size;
 
-    vector_t ret = malloc(sizeof(struct vector_));
+    vector_t* ret = malloc(sizeof(vector_t));
     NULL_CHECK(ret);
     ret->elem_capacity_count = calc_capacity_(elem_count);
     ret->elem_count = elem_count;
@@ -190,7 +190,7 @@ vector_t vector_copy(const struct vector_* vec, size_t start_index, size_t elem_
     return ret;
 }
 
-bool vector_copy_into(struct vector_* dst, size_t dst_index, const struct vector_* src, size_t src_index,
+bool vector_copy_into(vector_t* dst, size_t dst_index, const vector_t* src, size_t src_index,
                       size_t elem_count)
 {
     if(elem_count == 0)
@@ -218,7 +218,7 @@ bool vector_copy_into(struct vector_* dst, size_t dst_index, const struct vector
     return true;
 }
 
-bool vector_pop(struct vector_* vec, void* out)
+bool vector_pop(vector_t* vec, void* out)
 {
     if (vec->elem_count == 0)
         return false;
@@ -236,7 +236,7 @@ bool vector_pop(struct vector_* vec, void* out)
     return true;
 }
 
-bool vector_dequeue(struct vector_* vec, void* out)
+bool vector_dequeue(vector_t* vec, void* out)
 {
     if (vec->elem_count == 0)
         return false;
@@ -250,7 +250,7 @@ bool vector_dequeue(struct vector_* vec, void* out)
     return true;
 }
 
-bool vector_remove_at(struct vector_* vec, size_t index, void* out)
+bool vector_remove_at(vector_t* vec, size_t index, void* out)
 {
     if (index == 0)
         return vector_pop(vec, out);
@@ -274,7 +274,7 @@ bool vector_remove_at(struct vector_* vec, size_t index, void* out)
     return true;
 }
 
-void vector_add_with_(struct vector_* vec, void(*method)(struct vector_*, void*), ...)
+void vector_add_with_(vector_t* vec, void(*method)(vector_t*, void*), ...)
 {
     va_list args;
     va_start(args, method);
@@ -289,7 +289,7 @@ void vector_add_with_(struct vector_* vec, void(*method)(struct vector_*, void*)
     va_end(args);
 }
 
-bool vector_insert_ex_(struct vector_* vec, size_t start_index, ...)
+bool vector_insert_ex_(vector_t* vec, size_t start_index, ...)
 {
     va_list args;
     va_start(args, start_index);
@@ -306,7 +306,7 @@ bool vector_insert_ex_(struct vector_* vec, size_t start_index, ...)
     return true;
 }
 
-void vec_double_cap(struct vector_* vec)
+void vec_double_cap(vector_t* vec)
 {
     void* new_addr = realloc(vec->start_addr, vec->elem_size * vec->elem_capacity_count * 2);
     NULL_CHECK(new_addr);
@@ -314,7 +314,7 @@ void vec_double_cap(struct vector_* vec)
     vec->start_addr = new_addr;
 }
 
-void vec_half_cap(struct vector_* vec)
+void vec_half_cap(vector_t* vec)
 {
     void* new_addr = realloc(vec->start_addr, vec->elem_size * (vec->elem_capacity_count / 2));
     NULL_CHECK(new_addr);

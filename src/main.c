@@ -12,7 +12,7 @@ void num_example(void);
  * @return
  */
 NODISCARD
-vector_t text_retrieve_numbers(const string_t* text);
+vector_t* text_retrieve_numbers(const string_t* text);
 
 int main(void)
 {
@@ -71,7 +71,7 @@ void num_example(void)
 {
     stringbuilder_t builder;
     string_t text;
-    vector_t numbers = NULL;
+    vector_t* numbers = NULL;
 
     builder  = stringbuilder_create();
     printf("Text with numbers throughout: ");
@@ -95,12 +95,12 @@ void num_example(void)
     vector_clean(numbers);
 }
 
-vector_t text_retrieve_numbers(const string_t* text)
+vector_t* text_retrieve_numbers(const string_t* text)
 {
     bool found_number = false;
     stringview_t str_view = stringview_create(text, 0, 0);
     str_view.count = 0;
-    vector_t num_vector = vector_create(sizeof(long long));
+    vector_t* num_vector = vector_create(sizeof(long long));
     long long number = 0;
 
     while((str_view.start_idx + str_view.count) < str_view.str_->count_)

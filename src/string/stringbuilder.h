@@ -10,7 +10,7 @@
 
 typedef struct
 {
-    vector_t char_vector_;
+    vector_t* char_vector_;
 } stringbuilder_t;
 
 NODISCARD

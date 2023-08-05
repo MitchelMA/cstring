@@ -125,7 +125,7 @@ bool stringbuilder_push_cstr(stringbuilder_t* str_builder, const char* cstr)
 {
     NULL_CHECK(str_builder, false);
 
-    vector_t tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
+    vector_t* tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
     bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
     vector_clean(tmp);
     return pushed;
@@ -135,7 +135,7 @@ bool stringbuilder_push_str(stringbuilder_t* str_builder, const string_t* str)
 {
     NULL_CHECK(str_builder, false);
     
-    vector_t tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
+    vector_t* tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
     bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
     vector_clean(tmp);
     return pushed;
@@ -145,7 +145,7 @@ bool stringbuilder_push_strv(stringbuilder_t* str_builder, const stringview_t* s
 {
     NULL_CHECK(str_builder, false);
 
-    vector_t tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    vector_t* tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
     bool pushed = vector_push_to(str_builder->char_vector_, tmp, 0, 0);
     vector_clean(tmp);
     return pushed;
@@ -161,7 +161,7 @@ bool stringbuilder_insert_cstr(stringbuilder_t* str_builder, size_t idx, const c
 {
     NULL_CHECK(str_builder, false);
 
-    vector_t tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
+    vector_t* tmp = vector_create_from(sizeof(char), strlen(cstr), (void*) cstr);
     bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
     vector_clean(tmp);
     return copied;
@@ -170,7 +170,7 @@ bool stringbuilder_insert_cstr(stringbuilder_t* str_builder, size_t idx, const c
 bool stringbuilder_insert_str(stringbuilder_t* str_builder, size_t idx, const string_t* str)
 {
     NULL_CHECK(str_builder, false);
-    vector_t tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
+    vector_t* tmp = vector_create_from(sizeof(char), str->count_, (void*) str->text_);
     bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
     vector_clean(tmp);
     return copied;
@@ -179,7 +179,7 @@ bool stringbuilder_insert_str(stringbuilder_t* str_builder, size_t idx, const st
 bool stringbuilder_insert_strv(stringbuilder_t* str_builder, size_t idx, const stringview_t* strv)
 {
     NULL_CHECK(str_builder, false);
-    vector_t tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
+    vector_t* tmp = vector_create_from(sizeof(char), strv->count, (void*) (strv->str_->text_ + strv->start_idx));
     bool copied = vector_copy_into(str_builder->char_vector_, idx, tmp, 0, 0);
     vector_clean(tmp);
     return copied;
