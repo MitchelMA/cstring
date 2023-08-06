@@ -32,6 +32,9 @@ do                                                          \
 
 string_t string_empty = {0, NULL};
 
+size_t get_first_non_occurence_(const string_t* string, const char* delim);
+size_t get_last_non_occurence_(const string_t* string, const char* delim);
+
 
 string_t string_create(const char* c_str)
 {
@@ -340,6 +343,9 @@ string_t string_remove_from_start(const string_t* string, const char* remove)
 string_t string_remove_from_end(const string_t* string, const char* remove)
 {
     NULL_CHECK(string, string_empty);
+
+    size_t test = get_first_non_occurence_(string, remove);
+
     stringbuilder_t builder = stringbuilder_create_from_str(string);
     stringview_t view = {string->count_-1, 0, string};
     stringbuilder_t remove_buffer = stringbuilder_create();
@@ -390,3 +396,81 @@ string_t string_add_(const string_t* str1, ...)
 
     return ret;
 }
+
+size_t get_first_non_occurence_(const string_t* string, const char* delim)
+{
+    NULL_CHECK(string, 0);
+
+    stringbuilder_t delim_buffer = stringbuilder_create();
+    stringview_t view = {0, 0, string};
+    size_t delim_len = strlen(delim);
+    size_t idx = 0;
+    
+    while((view.start_idx + view.count) < view.str_->count_)
+    {
+        char current_char = view.str_->text_[view.start_idx + view.count];
+        if(!strchr(delim, current_char))
+            break;
+        
+        stringbuilder_append_ch(&delim_buffer, current_char);
+        if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
+            stringbuilder_reset(&delim_buffer);
+
+        char* built = stringbuilder_build_cstr(&delim_buffer);
+        if(!strcmp(built, delim))
+        {
+            stringbuilder_reset(&delim_buffer);
+            free(built);
+            idx = view.start_idx + view.count + 1;
+            view.start_idx += view.count + 1;
+            view.count = 0;
+            continue;
+        }
+
+        free(built);
+        view.count++;
+    }
+
+    stringbuilder_clean(&delim_buffer);
+
+    return idx;
+}
+
+size_t get_last_non_occurence_(const string_t* string, const char* delim)
+{
+    NULL_CHECK(string, 0);
+
+    stringbuilder_t delim_buffer = stringbuilder_create();
+    stringview_t view = {string->count_-1, 0, string};
+    size_t delim_len = strlen(delim);
+    size_t idx = 0;
+
+    while((view.start_idx + view.count) > 0)
+    {
+        char current_char = view.str_->text_[view.start_idx + view.count];
+        if(!strchr(delim, current_char))
+            break;
+
+        stringbuilder_push_ch(&delim_buffer, current_char);
+        if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
+            stringbuilder_reset(&delim_buffer);
+
+        char* built = stringbuilder_build_cstr(&delim_buffer);
+        if(!strcmp(built, delim))
+        {
+            stringbuilder_reset(&delim_buffer);
+            free(built);
+            idx = view.start_idx + view.count - 1;
+            view.start_idx -= delim_len;
+            view.count = 0;
+            continue;
+        }
+
+        view.start_idx--;
+        free(built);
+    }
+
+    stringbuilder_clean(&delim_buffer);
+    return idx;
+}
+
