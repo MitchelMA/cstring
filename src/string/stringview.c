@@ -86,6 +86,21 @@ char* stringview_cstr(const stringview_t* stringview)
     return copy;
 }
 
+string_t stringview_owning(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, string_empty);
+
+    size_t byte_count = sizeof(char) * stringview->count;
+    uintptr_t start_addr = (uintptr_t) stringview->str_->text_ + sizeof(char) * stringview->start_idx;
+
+    char* txt = malloc(byte_count);
+    if(txt == NULL)
+        return string_empty;
+
+    memcpy(txt, (void*) start_addr, byte_count);
+    return (string_t){stringview->count, txt};
+}
+
 bool stringview_output(FILE* fd, const stringview_t* stringview)
 {
     NULL_CHECK(stringview, false);
