@@ -325,6 +325,26 @@ string_t string_remove_from_end(const string_t* string, const char* remove)
     return stringview_owning(&view);
 }
 
+string_t string_remove_start_end(const string_t* string, const char* remove)
+{
+    NULL_CHECK(string, string_empty);
+
+    stringview_t view = {0};
+    size_t first_non = get_first_non_occurence_(string, remove);
+    size_t last_non  = get_last_non_occurence_(string, remove);
+
+    if(last_non == 0)
+    {
+        view = stringview_create(string, first_non, 0);
+    }
+    else
+    {
+        view = stringview_create(string, first_non, last_non - first_non + 1);
+    }
+
+    return stringview_owning(&view);
+}
+
 string_t string_add_(const string_t* str1, ...)
 {
     va_list args;

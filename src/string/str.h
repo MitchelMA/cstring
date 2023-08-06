@@ -58,6 +58,8 @@ NODISCARD
 string_t string_remove_from_start(const string_t* string, const char* remove);
 NODISCARD
 string_t string_remove_from_end(const string_t* string, const char* remove);
+NODISCARD
+string_t string_remove_start_end(const string_t* string, const char* remove);
 
 NODISCARD
 string_t string_add_(const string_t* str1, ...);
