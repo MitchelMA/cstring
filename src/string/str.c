@@ -344,38 +344,11 @@ string_t string_remove_from_end(const string_t* string, const char* remove)
 {
     NULL_CHECK(string, string_empty);
 
-    size_t test = get_first_non_occurence_(string, remove);
-
-    stringbuilder_t builder = stringbuilder_create_from_str(string);
-    stringview_t view = {string->count_-1, 0, string};
-    stringbuilder_t remove_buffer = stringbuilder_create();
-    size_t rem_len = strlen(remove);
-
-    while((view.start_idx + view.count) > 0)
-    {
-        char current_char = string->text_[view.start_idx];
-        if(!strchr(remove, current_char))
-            break;
-
-        stringbuilder_push_ch(&remove_buffer, current_char);
-        char* built = stringbuilder_build_cstr(&remove_buffer);
-        if(!strcmp(built, remove))
-        {
-            for(size_t i = 0; i < rem_len; i++)
-                stringbuilder_dequeue(&builder);
-            stringbuilder_reset(&remove_buffer);
-            view.start_idx -= rem_len;
-            view.count = 0;
-            free(built);
-            continue;
-        }
-
-        view.start_idx--;
-        view.count++;
-    }
-
-    stringbuilder_clean(&remove_buffer);
-    return stringbuilder_build(&builder);
+    size_t last_non = get_last_non_occurence_(string, remove);
+    if (last_non == 0)
+        return string_copy(string);
+    stringview_t view = stringview_create(string, 0, last_non+1);
+    return stringview_owning(&view);
 }
 
 string_t string_add_(const string_t* str1, ...)
