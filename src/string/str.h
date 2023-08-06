@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+#include <vector.h>
+
 #include "../common.h"
 
 typedef struct 
@@ -43,6 +46,18 @@ long long string_atoll(const string_t* string);
 size_t string_atos(const string_t* string);
 
 bool string_compare(const string_t* str1, const string_t* str2);
+NODISCARD
+/**
+ *  Returns a vector with stringviews.
+ *  @return A vector consisting of stringviews to the original string.
+ *  On failure it returns NULL.
+ */
+vector_t* string_split(const string_t* string, const char* delim);
+
+NODISCARD
+string_t string_remove_from_start(const string_t* string, const char* remove);
+NODISCARD
+string_t string_remove_from_end(const string_t* string, const char* remove);
 
 NODISCARD
 string_t string_add_(const string_t* str1, ...);

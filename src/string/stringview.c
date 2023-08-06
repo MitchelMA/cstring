@@ -157,3 +157,18 @@ size_t stringview_atos(const stringview_t* stringview)
     UNUSED(sign);
     return value;
 }
+
+bool stringview_compare_cstr(const stringview_t* stringview, const char* cstr)
+{
+    NULL_CHECK(stringview, false);
+    size_t clen = strlen(cstr);
+
+    if(stringview->count != clen)
+        return false;
+
+    for(size_t i = 0; i < clen; i++)
+        if(stringview->str_->text_[stringview->start_idx + i] != cstr[i])
+            return false;
+
+    return true;
+}

@@ -242,6 +242,136 @@ bool string_compare(const string_t* str1, const string_t* str2)
     return true;
 }
 
+vector_t* string_split(const string_t* string, const char* delim)
+{
+    NULL_CHECK(string, NULL);
+
+    // removing trailing en prepended delim-strings
+    string_t tmp = string_remove_from_end(string, delim);
+    string_t tmp2 = string_remove_from_start(&tmp, delim);
+    string_clean(&tmp);
+    // calculate the offsets from the strings with trailings removed
+    size_t min_start = (size_t) (strchr(string->text_, tmp2.text_[0]) - string->text_);
+    size_t max_count = tmp2.count_;
+    string_clean(&tmp2);
+
+    stringview_t current_view = {min_start, 0, string};
+    vector_t* view_vec = vector_create(sizeof(stringview_t));
+    stringbuilder_t delim_buffer = stringbuilder_create();
+    size_t delim_len = strlen(delim);
+
+    while((current_view.start_idx + current_view.count) < (min_start + max_count))
+    {
+        bool found_full_delim = false;
+        char current_char = current_view.str_->text_[current_view.start_idx + current_view.count];
+        if(strchr(delim, current_char))
+        {
+            stringbuilder_append_ch(&delim_buffer, current_char);
+
+            char* built = stringbuilder_build_cstr(&delim_buffer);
+            if(!strcmp(built, delim))
+            {
+                stringbuilder_reset(&delim_buffer);
+                found_full_delim = true;
+            }
+            free(built);
+        }
+        else
+        {
+            stringbuilder_reset(&delim_buffer);
+        }
+
+        if(found_full_delim)
+        {
+            current_view.count -= (delim_len - 1);
+            vector_append(view_vec, (void*) &current_view);
+            current_view.start_idx += current_view.count + delim_len;
+            current_view.count = 0;
+
+            continue;
+        }
+
+        current_view.count++;
+    }
+
+    if(current_view.count > 0)
+    {
+        vector_append(view_vec, (void*) &current_view);
+    }
+    stringbuilder_clean(&delim_buffer);
+    return view_vec;
+}
+
+string_t string_remove_from_start(const string_t* string, const char* remove)
+{
+    NULL_CHECK(string, string_empty);
+    stringbuilder_t builder = stringbuilder_create_from_str(string);
+    stringview_t view = {0, 0, string};
+    stringbuilder_t remove_buffer = stringbuilder_create();
+    size_t rem_len = strlen(remove);
+
+    while((view.start_idx + view.count) < string->count_)
+    {
+        char current_char = string->text_[view.start_idx + view.count];
+        if(!strchr(remove, current_char))
+            break;
+
+        stringbuilder_append_ch(&remove_buffer, current_char);
+        char* built = stringbuilder_build_cstr(&remove_buffer);
+        if(!strcmp(built, remove))
+        {
+            for(size_t i = 0; i < rem_len; i++)
+                stringbuilder_pop(&builder);
+
+            stringbuilder_reset(&remove_buffer);
+            view.start_idx += rem_len;
+            view.count = 0;
+            free(built);
+            continue;
+        }
+        
+        view.count++;
+    }
+
+    stringbuilder_clean(&remove_buffer);
+    return stringbuilder_build(&builder);
+}
+
+string_t string_remove_from_end(const string_t* string, const char* remove)
+{
+    NULL_CHECK(string, string_empty);
+    stringbuilder_t builder = stringbuilder_create_from_str(string);
+    stringview_t view = {string->count_-1, 0, string};
+    stringbuilder_t remove_buffer = stringbuilder_create();
+    size_t rem_len = strlen(remove);
+
+    while((view.start_idx + view.count) > 0)
+    {
+        char current_char = string->text_[view.start_idx];
+        if(!strchr(remove, current_char))
+            break;
+
+        stringbuilder_push_ch(&remove_buffer, current_char);
+        char* built = stringbuilder_build_cstr(&remove_buffer);
+        if(!strcmp(built, remove))
+        {
+            for(size_t i = 0; i < rem_len; i++)
+                stringbuilder_dequeue(&builder);
+            stringbuilder_reset(&remove_buffer);
+            view.start_idx -= rem_len;
+            view.count = 0;
+            free(built);
+            continue;
+        }
+
+        view.start_idx--;
+        view.count++;
+    }
+
+    stringbuilder_clean(&remove_buffer);
+    return stringbuilder_build(&builder);
+}
+
 string_t string_add_(const string_t* str1, ...)
 {
     va_list args;
