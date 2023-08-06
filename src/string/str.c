@@ -250,13 +250,10 @@ vector_t* string_split(const string_t* string, const char* delim)
     NULL_CHECK(string, NULL);
 
     // removing trailing en prepended delim-strings
-    string_t tmp = string_remove_from_end(string, delim);
-    string_t tmp2 = string_remove_from_start(&tmp, delim);
-    string_clean(&tmp);
     // calculate the offsets from the strings with trailings removed
-    size_t min_start = (size_t) (strchr(string->text_, tmp2.text_[0]) - string->text_);
-    size_t max_count = tmp2.count_;
-    string_clean(&tmp2);
+    size_t min_start = get_first_non_occurence_(string, delim);
+    size_t max_count = get_last_non_occurence_(string, delim);
+    max_count = max_count > 0 ? max_count + 1 : string->count_;
 
     stringview_t current_view = {min_start, 0, string};
     vector_t* view_vec = vector_create(sizeof(stringview_t));
@@ -428,13 +425,13 @@ size_t get_last_non_occurence_(const string_t* string, const char* delim)
             stringbuilder_reset(&delim_buffer);
             free(built);
             idx = view.start_idx + view.count - 1;
-            view.start_idx -= delim_len;
+            view.start_idx -= 1;
             view.count = 0;
             continue;
         }
 
-        view.start_idx--;
         free(built);
+        view.start_idx--;
     }
 
     stringbuilder_clean(&delim_buffer);
