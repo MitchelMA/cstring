@@ -15,6 +15,8 @@ bool stringview_reset(stringview_t* stringview);
 
 NODISCARD
 char* stringview_cstr(const stringview_t* stringview);
+NODISCARD
+string_t stringview_owning(const stringview_t* stringview);
 
 bool stringview_output(FILE* fd, const stringview_t* stringview);
 #define stringview_print(STRV_PTR) stringview_output(stdout, (STRV_PTR))
