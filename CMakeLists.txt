@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 project(CString
-    VERSION 0.8
+    VERSION 0.8.1
     DESCRIPTION "Veilige string-interactions in C"
     LANGUAGES C)
 set(CMAKE_C_STANDARD 17)

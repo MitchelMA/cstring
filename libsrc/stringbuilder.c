@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
     #include <windows.h>

@@ -121,6 +121,10 @@ string_t string_read(FILE* fstream, size_t max_len)
 
     file_size = (size_t) success;
     file_size = file_size > max_len ? max_len : file_size;
+
+    if(file_size == 0)
+        return string_empty;
+
     fseek(fstream, 0, SEEK_SET);
 
     if((content = malloc(sizeof(char) * file_size)) == NULL)
