@@ -1,7 +1,13 @@
+// Enabling Posix Extensions
+#if __STDC_VERSION__ >= 199901L
+    #define _XOPEN_SOURCE 600
+#else
+    #define _XOPEN_SOURCE 500
+#endif /* __STDC_VERSION__ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
     #include <windows.h>
