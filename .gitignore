@@ -6,3 +6,5 @@ build-release**
 # Editor files
 .idea**
 .vscode**
+.cache**
+**compile_commands.json
