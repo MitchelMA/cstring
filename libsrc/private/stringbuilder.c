@@ -330,20 +330,16 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_
         return false;
     ungetc(ch, fstream);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-
     int exit_cond = '\n';
     if(fstream != stdin)
         exit_cond = EOF;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
     while((ch = fgetc(fstream)) != exit_cond && read_count++ < max_read_count)
         vector_append(str_builder->char_vector_, (void*) &ch);
 
 #elif defined(__linux__)
-
-    int exit_cond = '\n';
-    if(fstream != stdin)
-        exit_cond = EOF;
 
     int filenumber = fileno(fstream);
     int def_flag = fcntl(filenumber, F_GETFL);
