@@ -8,7 +8,7 @@ set(CMAKE_C_STANDARD 17)
 
 FetchContent_Declare(CVector
     GIT_REPOSITORY https://github.com/MitchelMA/CVector.git
-    GIT_TAG v1.00)
+    GIT_TAG main)
 FetchContent_MakeAvailable(CVector)
 
 set(SOURCES_DIR ./libsrc)
