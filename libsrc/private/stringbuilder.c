@@ -341,11 +341,15 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_
 
 #elif defined(__linux__)
 
+    int exit_cond = '\n';
+    if(fstream != stdin)
+        exit_cond = EOF;
+
     int filenumber = fileno(fstream);
     int def_flag = fcntl(filenumber, F_GETFL);
 
     fcntl(filenumber, F_SETFL, def_flag | O_NONBLOCK);
-    while((ch = fgetc(fstream)) != EOF && read_count++ < max_read_count)
+    while((ch = fgetc(fstream)) != exit_cond && read_count++ < max_read_count)
         vector_append(str_builder->char_vector_, (void*) &ch);
     fcntl(filenumber, F_SETFL, def_flag);
 
