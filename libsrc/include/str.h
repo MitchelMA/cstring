@@ -20,13 +20,16 @@ extern string_t string_empty;
 NODISCARD
 string_t string_create(const char* c_str);
 bool string_clean(string_t* string);
+size_t string_length(const string_t* string);
 NODISCARD
 string_t string_copy(const string_t* src);
 #define string_add(...) string_add_(__VA_ARGS__, NULL)
 NODISCARD
-char* string_c_str(const string_t* string);
+char* string_cstr(const string_t* string);
 bool string_output(FILE* fstream, const string_t* string);
 #define string_print(STR_PTR) string_output(stdout, (STR_PTR))
+
+
 
 NODISCARD
 string_t string_read(FILE* fstream, size_t max_len);

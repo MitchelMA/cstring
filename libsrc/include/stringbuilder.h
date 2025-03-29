@@ -24,6 +24,7 @@ stringbuilder_t stringbuilder_create_from_strv(const stringview_t* strv);
 
 bool stringbuilder_clean(stringbuilder_t* str_builder);
 bool stringbuilder_reset(stringbuilder_t* str_builder);
+size_t stringbuilder_length(const stringbuilder_t* str_builder);
 
 bool stringbuilder_append_ch(stringbuilder_t* str_builder, char character);
 bool stringbuilder_append_cstr(stringbuilder_t* str_builder, const char* cstr);

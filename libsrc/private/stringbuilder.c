@@ -81,6 +81,12 @@ bool stringbuilder_reset(stringbuilder_t* str_builder)
     return true;
 }
 
+size_t stringbuilder_length(const stringbuilder_t* str_builder)
+{
+    NULL_CHECK(str_builder, 0);
+    return vector_get_elem_count(str_builder->char_vector_);
+}
+
 bool stringbuilder_append_ch(stringbuilder_t* str_builder, char character)
 {
     NULL_CHECK(str_builder, false);

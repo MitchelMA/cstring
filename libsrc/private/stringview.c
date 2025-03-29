@@ -101,6 +101,12 @@ string_t stringview_owning(const stringview_t* stringview)
     return (string_t){stringview->count, txt};
 }
 
+size_t stringview_length(const stringview_t* stringview)
+{
+    NULL_CHECK(stringview, 0);
+    return stringview->count;
+}
+
 bool stringview_output(FILE* fd, const stringview_t* stringview)
 {
     NULL_CHECK(stringview, false);

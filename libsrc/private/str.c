@@ -61,6 +61,12 @@ bool string_clean(string_t* string)
     return true;
 }
 
+size_t string_length(const string_t* string)
+{
+    NULL_CHECK(string, 0);
+    return string->count_;
+}
+
 string_t string_copy(const string_t* src)
 {
     NULL_CHECK(src, string_empty);
@@ -74,7 +80,7 @@ string_t string_copy(const string_t* src)
     return (string_t){src->count_, copy};
 }
 
-char* string_c_str(const string_t* string)
+char* string_cstr(const string_t* string)
 {
     NULL_CHECK(string, NULL);
     size_t byte_count = sizeof(char) * string->count_;
