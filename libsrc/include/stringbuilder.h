@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include <vector.h>
-#include "_cstring_private_/_private.h"
+#include "../private/private_macros.h"
 #include "str.h"
 #include "stringview.h"
 

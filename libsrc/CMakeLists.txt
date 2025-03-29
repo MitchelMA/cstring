@@ -4,8 +4,8 @@ target_link_libraries(CString
     PUBLIC 
     CVector)
 
-file(GLOB STRING_SOURCES *.c)
-file(GLOB STRING_HEADERS *.h)
+file(GLOB STRING_SOURCES ./private/*.c)
+file(GLOB STRING_HEADERS ./include/*.h)
 
 
 target_sources(CString
@@ -16,4 +16,4 @@ target_sources(CString
 
 target_include_directories(CString
     PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR})
+    ${CMAKE_CURRENT_LIST_DIR}/include)

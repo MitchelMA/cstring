@@ -7,7 +7,7 @@
 
 #include <vector.h>
 
-#include "_cstring_private_/_private.h"
+#include "../private/private_macros.h"
 
 typedef struct 
 {
