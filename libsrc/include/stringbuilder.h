@@ -66,5 +66,7 @@ bool stringbuilder_output(FILE* fstream, const stringbuilder_t* builder);
 bool stringbuilder_compare(const stringbuilder_t* a, const stringbuilder_t* b);
 bool stringbuilder_compare_string(const stringbuilder_t* builder, const string_t* str);
 bool stringbuilder_compare_view(const stringbuilder_t* builder, const stringview_t* view);
+bool stringbuilder_compare_cstr(const stringbuilder_t* builder, const char* cstr);
+
 
 #endif // STRINGBUILDER_H__

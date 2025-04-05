@@ -414,7 +414,7 @@ bool stringbuilder_compare_view(const stringbuilder_t* builder, const stringview
     if (view == NULL || view->str_ == NULL || view->str_->text_ == NULL)
         return false;
     
-    size_t builder_len = vector_get_elem_count(builder->char_vector_);   
+    size_t builder_len = vector_get_elem_count(builder->char_vector_);
     size_t view_len = stringview_length(view);
 
     if (builder_len != view_len)
@@ -427,5 +427,26 @@ bool stringbuilder_compare_view(const stringbuilder_t* builder, const stringview
         builder_data,
         view_data,
         view_len
+    ) == 0;
+}
+
+bool stringbuilder_compare_cstr(const stringbuilder_t* builder, const char* cstr)
+{
+    NULL_CHECK(builder, false);
+    if (cstr == NULL)
+        return false;
+
+    size_t builder_len = vector_get_elem_count(builder->char_vector_);
+    size_t cstr_len = strlen(cstr);
+
+    if (builder_len != cstr_len)
+        return false;
+
+    char* builder_data = (char*)vector_get_start_addr_(builder->char_vector_);
+
+    return strncmp(
+        builder_data,
+        cstr,
+        builder_len
     ) == 0;
 }

@@ -267,14 +267,11 @@ vector_t* string_split(const string_t* string, const char* delim)
         if(strchr(delim, current_char))
         {
             stringbuilder_append_ch(&delim_buffer, current_char);
-
-            char* built = stringbuilder_build_cstr(&delim_buffer);
-            if(!strcmp(built, delim))
+            if (stringbuilder_compare_cstr(&delim_buffer, delim))
             {
                 stringbuilder_reset(&delim_buffer);
                 found_full_delim = true;
             }
-            free(built);
         }
         else
         {
@@ -380,18 +377,15 @@ size_t get_first_non_occurence_(const string_t* string, const char* delim)
         if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
             stringbuilder_reset(&delim_buffer);
 
-        char* built = stringbuilder_build_cstr(&delim_buffer);
-        if(!strcmp(built, delim))
+        if (stringbuilder_compare_cstr(&delim_buffer, delim))
         {
             stringbuilder_reset(&delim_buffer);
-            free(built);
             idx = view.start_idx + view.count + 1;
             view.start_idx += view.count + 1;
             view.count = 0;
             continue;
         }
 
-        free(built);
         view.count++;
     }
 
@@ -419,22 +413,18 @@ size_t get_last_non_occurence_(const string_t* string, const char* delim)
         if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
             stringbuilder_reset(&delim_buffer);
 
-        char* built = stringbuilder_build_cstr(&delim_buffer);
-        if(!strcmp(built, delim))
+        if (stringbuilder_compare_cstr(&delim_buffer, delim))
         {
             stringbuilder_reset(&delim_buffer);
-            free(built);
             idx = view.start_idx + view.count - 1;
             view.start_idx -= 1;
             view.count = 0;
             continue;
         }
 
-        free(built);
         view.start_idx--;
     }
 
     stringbuilder_clean(&delim_buffer);
     return idx;
 }
-
