@@ -98,18 +98,10 @@ bool string_output(FILE* fstream, const string_t* string)
 {
     NULL_CHECK(string, false);
 
-    // building the format string.
-    stringbuilder_t format_builder = stringbuilder_create();
-    stringbuilder_append_cstr(&format_builder, "%."); 
-    stringbuilder_stoa(&format_builder, string->count_);
-    stringbuilder_append_ch(&format_builder, 's');
-    char* format_cstr = stringbuilder_build_cstr(&format_builder);
-    stringbuilder_clean(&format_builder);
+    size_t count = string->count_;
+    char* data = string->text_;
 
-    // using the format-string to output to the file-descriptor.
-    fprintf(fstream, format_cstr, string->text_);
-    free(format_cstr);
-
+    fprintf(fstream, "%.*s", count, data);
     return true;
 }
 
@@ -246,13 +238,11 @@ bool string_compare(const string_t* str1, const string_t* str2)
 
     size_t len = str1->count_;
 
-    for(size_t i = 0; i < len; i++)
-    {
-        if(str1->text_[i] != str2->text_[i])
-            return false;
-    }
-
-    return true;
+    return strncmp(
+        str1->text_,
+        str2->text_,
+        len
+    ) == 0;
 }
 
 vector_t* string_split(const string_t* string, const char* delim)

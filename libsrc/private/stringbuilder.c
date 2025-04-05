@@ -353,3 +353,79 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_
 
     return true;
 }
+
+bool stringbuilder_output(FILE* fstream, const stringbuilder_t* builder)
+{
+    NULL_CHECK(builder, false);
+    
+    size_t count = vector_get_elem_count(builder->char_vector_);
+    char* data = (char*) vector_get_start_addr_(builder->char_vector_);
+
+    fprintf(fstream, "%.*s", count, data);
+    return true;
+}
+
+bool stringbuilder_compare(const stringbuilder_t* a, const stringbuilder_t* b)
+{
+    NULL_CHECK(a, false);
+    NULL_CHECK(b, false);
+
+    size_t size_a = vector_get_elem_count(a->char_vector_);
+    size_t size_b = vector_get_elem_count(b->char_vector_);
+
+    if (size_a != size_b)
+        return false;
+
+    char* data_a = (char*)vector_get_start_addr_(a->char_vector_);
+    char* data_b = (char*)vector_get_start_addr_(b->char_vector_);
+
+    return strncmp(
+        data_a,
+        data_b,
+        size_a
+    ) == 0;
+}
+
+bool stringbuilder_compare_string(const stringbuilder_t* builder, const string_t* str)
+{
+    NULL_CHECK(builder, false);
+    if (str == NULL || str->text_ == NULL)
+        return false;
+
+    size_t builder_len = vector_get_elem_count(builder->char_vector_);
+    size_t string_len = string_length(str);
+
+    if (builder_len != string_len)
+        return false;
+
+    char* builder_data = (char*)vector_get_start_addr_(builder->char_vector_);
+    char* string_data = str->text_;
+    
+    return strncmp(
+        builder_data,
+        string_data,
+        builder_len
+    ) == 0;
+}
+
+bool stringbuilder_compare_view(const stringbuilder_t* builder, const stringview_t* view)
+{
+    NULL_CHECK(builder, false);
+    if (view == NULL || view->str_ == NULL || view->str_->text_ == NULL)
+        return false;
+    
+    size_t builder_len = vector_get_elem_count(builder->char_vector_);   
+    size_t view_len = stringview_length(view);
+
+    if (builder_len != view_len)
+        return false;
+
+    char* builder_data = (char*)vector_get_start_addr_(builder->char_vector_);
+    char* view_data = view->str_->text_ + view->start_idx;
+
+    return strncmp(
+        builder_data,
+        view_data,
+        view_len
+    ) == 0;
+}

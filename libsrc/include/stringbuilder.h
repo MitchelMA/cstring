@@ -60,4 +60,11 @@ void stringbuilder_stoa(stringbuilder_t* str_builder, size_t value);
 bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_read_count);
 #define stringbuilder_read_console(STR_BUILDER_PTR) stringbuilder_read(stdin, (STR_BUILDER_PTR), ~(size_t) 0)
 
+bool stringbuilder_output(FILE* fstream, const stringbuilder_t* builder);
+#define stringbuilder_print(STR_BUILDER_PTR) stringbuilder_output(stdout, (STR_BUILDER_PTR))
+
+bool stringbuilder_compare(const stringbuilder_t* a, const stringbuilder_t* b);
+bool stringbuilder_compare_string(const stringbuilder_t* builder, const string_t* str);
+bool stringbuilder_compare_view(const stringbuilder_t* builder, const stringview_t* view);
+
 #endif // STRINGBUILDER_H__

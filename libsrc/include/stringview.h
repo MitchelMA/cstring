@@ -27,6 +27,9 @@ long stringview_atol(const stringview_t* stringview);
 long long stringview_atoll(const stringview_t* stringview);
 size_t stringview_atos(const stringview_t* stringivew);
 
-bool stringview_compare_cstr(const stringview_t* str_view, const char* cstr);
+bool stringview_source_compare(const stringview_t* a, const stringview_t* b);
+bool stringview_value_compare(const stringview_t* a, const stringview_t* b);
+
+bool stringview_compare_cstr(const stringview_t* view, const char* cstr);
 
 #endif // STRINGVIEW_H__

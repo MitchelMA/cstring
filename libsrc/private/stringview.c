@@ -111,14 +111,10 @@ bool stringview_output(FILE* fd, const stringview_t* stringview)
 {
     NULL_CHECK(stringview, false);
 
-    stringbuilder_t format_builder = stringbuilder_create();
-    stringbuilder_append_cstr(&format_builder, "%.");
-    stringbuilder_stoa(&format_builder, stringview->count);
-    stringbuilder_append_ch(&format_builder, 's');
-    char* cstr_format = stringbuilder_build_cstr(&format_builder);
-    stringbuilder_clean(&format_builder);
-    fprintf(fd, cstr_format, (stringview->str_->text_ + stringview->start_idx));
-    free(cstr_format);
+    size_t count = stringview->count;
+    char* data = stringview->str_->text_ + stringview->start_idx;
+
+    fprintf(fd, "%.*s", count, data);
 
     return true;
 }
@@ -179,17 +175,53 @@ size_t stringview_atos(const stringview_t* stringview)
     return value;
 }
 
-bool stringview_compare_cstr(const stringview_t* stringview, const char* cstr)
+bool stringview_source_compare(const stringview_t* a, const stringview_t* b)
 {
-    NULL_CHECK(stringview, false);
-    size_t clen = strlen(cstr);
+    NULL_CHECK(a, false);
+    NULL_CHECK(b, false);
 
-    if(stringview->count != clen)
+    if (a->str_ != b->str_)
         return false;
 
-    for(size_t i = 0; i < clen; i++)
-        if(stringview->str_->text_[stringview->start_idx + i] != cstr[i])
-            return false;
+    if (a->start_idx != b->start_idx)
+        return false;
 
-    return true;
+    return a->count == b->count;
+}
+
+bool stringview_value_compare(const stringview_t* a, const stringview_t* b)
+{
+    NULL_CHECK(a, false);
+    NULL_CHECK(b, false);
+
+    if (a->count != b->count)
+        return false;
+
+    return strncmp(
+        (char*)(a->str_->text_ + a->start_idx),
+        (char*)(b->str_->text_ + b->start_idx),
+        a->count
+    ) == 0;
+}
+
+bool stringview_compare_cstr(const stringview_t* view, const char* cstr)
+{
+    NULL_CHECK(view, false);
+    if (cstr == NULL)
+        return false;
+
+    size_t clen = strlen(cstr);
+
+    if(view->count != clen)
+        return false;
+
+    printf("\"%s\" : \"", cstr);
+    stringview_print(view);
+    printf("\"\n");
+
+    return strncmp(
+        (char*)(view->str_->text_ + view->start_idx),
+        cstr,
+        view->count 
+    ) == 0;
 }
