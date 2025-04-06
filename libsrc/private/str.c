@@ -101,7 +101,7 @@ bool string_output(FILE* fstream, const string_t* string)
     size_t count = string->count_;
     char* data = string->text_;
 
-    fprintf(fstream, "%.*s", count, data);
+    fprintf(fstream, "%.*s", (int)count, data);
     return true;
 }
 

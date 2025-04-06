@@ -114,7 +114,7 @@ bool stringview_output(FILE* fd, const stringview_t* stringview)
     size_t count = stringview->count;
     char* data = stringview->str_->text_ + stringview->start_idx;
 
-    fprintf(fd, "%.*s", count, data);
+    fprintf(fd, "%.*s", (int)count, data);
 
     return true;
 }

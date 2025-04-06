@@ -361,7 +361,7 @@ bool stringbuilder_output(FILE* fstream, const stringbuilder_t* builder)
     size_t count = vector_get_elem_count(builder->char_vector_);
     char* data = (char*) vector_get_start_addr_(builder->char_vector_);
 
-    fprintf(fstream, "%.*s", count, data);
+    fprintf(fstream, "%.*s", (int)count, data);
     return true;
 }
 
