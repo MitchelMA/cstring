@@ -252,60 +252,51 @@ vector_t* string_split(const string_t* string, const char* delim)
 {
     NULL_CHECK(string, NULL);
 
-    // removing trailing en prepended delim-strings
-    // calculate the offsets from the strings with trailings removed
-    size_t min_start = get_first_non_occurence_(string, delim);
-    size_t max_count = get_last_non_occurence_(string, delim);
-    max_count = max_count > 0 ? max_count + 1 : string->count_;
+    if (delim == NULL)
+        return NULL;
 
-    stringview_t current_view = {min_start, 0, string};
-    vector_t* view_vec = vector_create(sizeof(stringview_t));
-    stringbuilder_t delim_buffer = stringbuilder_create();
-    size_t delim_len = strlen(delim);
+    size_t delim_length = strlen(delim);
 
-    while((current_view.start_idx + current_view.count) < (min_start + max_count))
+    if (delim_length == 0 || delim_length >= string->count_)
+        return NULL;
+
+    vector_t* view_vector = vector_create(sizeof(stringview_t));
+    stringview_t window = stringview_create(string, 0, delim_length);
+    size_t anchor = 0;
+    size_t endIdx = string->count_ - (window.count - 1);
+
+    size_t index = 0;
+    while (index < endIdx)
     {
-        bool found_full_delim = false;
-        char current_char = current_view.str_->text_[current_view.start_idx + current_view.count];
-        if(strchr(delim, current_char))
+        window.start_idx = index;
+        bool is_found = stringview_compare_cstr(&window, delim);
+        
+        if (is_found)
         {
-            stringbuilder_append_ch(&delim_buffer, current_char);
-            if (stringbuilder_compare_cstr(&delim_buffer, delim))
-            {
-                stringbuilder_reset(&delim_buffer);
-                found_full_delim = true;
-            }
-        }
-        else
-        {
-            stringbuilder_reset(&delim_buffer);
-        }
+            stringview_t anchor_view = stringview_create(string, anchor, index - anchor);
 
-        if(found_full_delim)
-        {
-            current_view.count -= (delim_len - 1);
-            vector_append(view_vec, (void*) &current_view);
-            current_view.start_idx += current_view.count + delim_len;
-            current_view.count = 0;
+            if (index > anchor)
+                vector_append(view_vector, (void*)&anchor_view);
 
+            index += delim_length;
+            anchor = index;
             continue;
         }
 
-        current_view.count++;
+        index++;
     }
 
-    if(current_view.count > 0)
-    {
-        vector_append(view_vec, (void*) &current_view);
-    }
-    stringbuilder_clean(&delim_buffer);
-    return view_vec;
+    stringview_t remaining_view = stringview_create(string, anchor, string->count_ - anchor);
+    if (remaining_view.count > 0)
+        vector_append(view_vector, (void*)&remaining_view);
+
+    return view_vector;
 }
 
 void string_sort_alpha(string_t* string)
 {
     if (string == NULL || string->text_ == NULL || string->count_ == 0)
-      return;
+        return;
 
     qsort(string->text_, string->count_, sizeof(char), qsort_char_compare_);
 }
@@ -313,9 +304,32 @@ void string_sort_alpha(string_t* string)
 void string_sort_alpha_inverse(string_t* string)
 {
     if (string == NULL || string->text_ == NULL || string->count_ == 0)
-      return;
+        return;
 
     qsort(string->text_, string->count_, sizeof(char), qsort_char_compare_inverse_);
+}
+
+string_t string_remove_match(const string_t* string, const char* match)
+{
+    NULL_CHECK(string, string_empty);
+
+    vector_t* view_vector = string_split(string, match);
+
+    if (view_vector == NULL)
+        return string_empty;
+
+    stringbuilder_t end_builder = stringbuilder_create();
+    size_t vector_size = vector_get_elem_count(view_vector);
+    stringview_t* start_addr = (stringview_t*)vector_get_start_addr_(view_vector);
+
+    for (size_t i = 0; i < vector_size; ++i)
+        stringbuilder_append_strv(&end_builder, (start_addr + i));
+
+    vector_clean(view_vector);
+    string_t end_string = stringbuilder_build(&end_builder);
+    stringbuilder_clean(&end_builder);
+
+    return end_string;
 }
 
 string_t string_remove_from_start(const string_t* string, const char* remove)

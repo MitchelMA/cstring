@@ -60,6 +60,9 @@ void string_sort_alpha(string_t* string);
 void string_sort_alpha_inverse(string_t* string);
 
 NODISCARD
+string_t string_remove_match(const string_t* string, const char* match);
+
+NODISCARD
 string_t string_remove_from_start(const string_t* string, const char* remove);
 NODISCARD
 string_t string_remove_from_end(const string_t* string, const char* remove);

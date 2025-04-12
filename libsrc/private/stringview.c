@@ -215,10 +215,6 @@ bool stringview_compare_cstr(const stringview_t* view, const char* cstr)
     if(view->count != clen)
         return false;
 
-    printf("\"%s\" : \"", cstr);
-    stringview_print(view);
-    printf("\"\n");
-
     return strncmp(
         (char*)(view->str_->text_ + view->start_idx),
         cstr,
