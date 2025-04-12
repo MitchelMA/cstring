@@ -35,6 +35,9 @@ string_t string_empty = {0, NULL};
 size_t get_first_non_occurence_(const string_t* string, const char* delim);
 size_t get_last_non_occurence_(const string_t* string, const char* delim);
 
+static int qsort_char_compare_(const void* a, const void* b);
+static int qsort_char_compare_inverse_(const void* a, const void* b);
+
 
 string_t string_create(const char* c_str)
 {
@@ -299,6 +302,22 @@ vector_t* string_split(const string_t* string, const char* delim)
     return view_vec;
 }
 
+void string_sort_alpha(string_t* string)
+{
+    if (string == NULL || string->text_ == NULL || string->count_ == 0)
+      return;
+
+    qsort(string->text_, string->count_, sizeof(char), qsort_char_compare_);
+}
+
+void string_sort_alpha_inverse(string_t* string)
+{
+    if (string == NULL || string->text_ == NULL || string->count_ == 0)
+      return;
+
+    qsort(string->text_, string->count_, sizeof(char), qsort_char_compare_inverse_);
+}
+
 string_t string_remove_from_start(const string_t* string, const char* remove)
 {
     NULL_CHECK(string, string_empty);
@@ -427,4 +446,20 @@ size_t get_last_non_occurence_(const string_t* string, const char* delim)
 
     stringbuilder_clean(&delim_buffer);
     return idx;
+}
+
+int qsort_char_compare_(const void* a, const void* b)
+{
+    char* a_char = (char*)a;
+    char* b_char = (char*)b;
+
+    return *a_char - *b_char;
+}
+
+int qsort_char_compare_inverse_(const void* a, const void* b)
+{
+    char* a_char = (char*)a;
+    char* b_char = (char*)b;
+
+    return *b_char - *a_char;
 }
