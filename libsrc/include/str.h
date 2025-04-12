@@ -7,13 +7,8 @@
 
 #include <vector.h>
 
+#include "types.h"
 #include "../private/private_macros.h"
-
-typedef struct 
-{
-    size_t count_;
-    char* text_;
-} string_t;
 
 extern string_t string_empty;
 
@@ -48,6 +43,9 @@ long long string_atoll(const string_t* string);
 size_t string_atos(const string_t* string);
 
 bool string_compare(const string_t* str1, const string_t* str2);
+
+int64_t string_find_cstr(const string_t* string, const char* match, int occurrence_index);
+
 NODISCARD
 /**
  *  Returns a vector with stringviews.
@@ -62,12 +60,9 @@ void string_sort_alpha_inverse(string_t* string);
 NODISCARD
 string_t string_remove_match(const string_t* string, const char* match);
 
-NODISCARD
-string_t string_remove_from_start(const string_t* string, const char* remove);
-NODISCARD
-string_t string_remove_from_end(const string_t* string, const char* remove);
-NODISCARD
-string_t string_remove_start_end(const string_t* string, const char* remove);
+stringview_t string_trim_start(const string_t* string, const char* remove);
+stringview_t string_trim_end(const string_t* string, const char* remove);
+stringview_t string_trim_both(const string_t* string, const char* remove);
 
 NODISCARD
 string_t string_add_(const string_t* str1, ...);

@@ -5,6 +5,7 @@
 
 #include "stringbuilder.h"
 #include "str.h"
+#include "stringview.h"
 
 #define NULL_CHECK(STRINGPTR, RETURN)                                                     \
     do                                                                                    \
@@ -32,8 +33,8 @@ do                                                          \
 
 string_t string_empty = {0, NULL};
 
-size_t get_first_non_occurence_(const string_t* string, const char* delim);
-size_t get_last_non_occurence_(const string_t* string, const char* delim);
+int64_t get_first_non_occurrence_(const string_t* string, const char* match);
+int64_t get_last_non_occurrence_(const string_t* string, const char* match);
 
 static int qsort_char_compare_(const void* a, const void* b);
 static int qsort_char_compare_inverse_(const void* a, const void* b);
@@ -248,6 +249,46 @@ bool string_compare(const string_t* str1, const string_t* str2)
     ) == 0;
 }
 
+int64_t string_find_cstr(const string_t* string, const char* match, int occurrence_index)
+{
+    NULL_CHECK(string, -1);
+    
+    if (match == NULL)
+        return -1;
+
+    size_t match_length = strlen(match);
+
+    if (match_length == 0)
+        return -1;
+
+    stringview_t window = stringview_create(string, 0, match_length);
+    size_t anchor = 0;
+    size_t endIdx = string->count_ - (match_length - 1);
+
+    size_t letter_index = 0;
+    while (letter_index < endIdx)
+    {
+        window.start_idx = letter_index;
+        bool is_found = stringview_compare_cstr(&window, match);
+
+        if (is_found)
+        {
+            if (occurrence_index <= 0)
+              return letter_index;
+
+            occurrence_index--;
+            letter_index += match_length;
+            anchor = letter_index;
+
+            continue;
+        }
+
+        letter_index++;
+    }
+
+    return -1;
+}
+
 vector_t* string_split(const string_t* string, const char* delim)
 {
     NULL_CHECK(string, NULL);
@@ -332,35 +373,34 @@ string_t string_remove_match(const string_t* string, const char* match)
     return end_string;
 }
 
-string_t string_remove_from_start(const string_t* string, const char* remove)
+stringview_t string_trim_start(const string_t* string, const char* remove)
 {
-    NULL_CHECK(string, string_empty);
+    NULL_CHECK(string, (stringview_t){0});
     
-    size_t first_non = get_first_non_occurence_(string, remove);
-    stringview_t view = stringview_create(string, first_non, 0);
-    return stringview_owning(&view);
+    int64_t first_non = get_first_non_occurrence_(string, remove);
+    return stringview_create(string, first_non, 0);
 }
 
-string_t string_remove_from_end(const string_t* string, const char* remove)
+stringview_t string_trim_end(const string_t* string, const char* remove)
 {
-    NULL_CHECK(string, string_empty);
+    NULL_CHECK(string, (stringview_t){0});
 
-    size_t last_non = get_last_non_occurence_(string, remove);
-    if (last_non == 0)
-        return string_copy(string);
-    stringview_t view = stringview_create(string, 0, last_non+1);
-    return stringview_owning(&view);
+    int64_t last_non = get_last_non_occurrence_(string, remove);
+    if (last_non == -1)
+        return (stringview_t){0};
+
+    return stringview_create(string, 0, last_non+1);
 }
 
-string_t string_remove_start_end(const string_t* string, const char* remove)
+stringview_t string_trim_both(const string_t* string, const char* remove)
 {
-    NULL_CHECK(string, string_empty);
+    NULL_CHECK(string, (stringview_t){0});
 
     stringview_t view = {0};
-    size_t first_non = get_first_non_occurence_(string, remove);
-    size_t last_non  = get_last_non_occurence_(string, remove);
+    int64_t first_non = get_first_non_occurrence_(string, remove);
+    int64_t last_non  = get_last_non_occurrence_(string, remove);
 
-    if(last_non == 0)
+    if(last_non == -1)
     {
         view = stringview_create(string, first_non, 0);
     }
@@ -369,7 +409,7 @@ string_t string_remove_start_end(const string_t* string, const char* remove)
         view = stringview_create(string, first_non, last_non - first_non + 1);
     }
 
-    return stringview_owning(&view);
+    return view; 
 }
 
 string_t string_add_(const string_t* str1, ...)
@@ -391,75 +431,61 @@ string_t string_add_(const string_t* str1, ...)
     return ret;
 }
 
-size_t get_first_non_occurence_(const string_t* string, const char* delim)
+int64_t get_first_non_occurrence_(const string_t* string, const char* match)
 {
-    NULL_CHECK(string, 0);
+    NULL_CHECK(string, -1);
 
-    stringbuilder_t delim_buffer = stringbuilder_create();
-    stringview_t view = {0, 0, string};
-    size_t delim_len = strlen(delim);
-    size_t idx = 0;
-    
-    while((view.start_idx + view.count) < view.str_->count_)
+    if (match == NULL)
+        return -1;
+
+    size_t match_length = strlen(match);
+    if (match_length == 0 || match_length >= string->count_)
+        return -1;
+
+    stringview_t window = stringview_create(string, 0, match_length);
+    size_t endIdx = string->count_ - (match_length - 1);
+
+    size_t index = 0;
+    while (index < endIdx)
     {
-        char current_char = view.str_->text_[view.start_idx + view.count];
-        if(!strchr(delim, current_char))
-            break;
+        window.start_idx = index;
+
+        bool is_found = stringview_compare_cstr(&window, match);
+        if (!is_found)
+            return index;
         
-        stringbuilder_append_ch(&delim_buffer, current_char);
-        if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
-            stringbuilder_reset(&delim_buffer);
-
-        if (stringbuilder_compare_cstr(&delim_buffer, delim))
-        {
-            stringbuilder_reset(&delim_buffer);
-            idx = view.start_idx + view.count + 1;
-            view.start_idx += view.count + 1;
-            view.count = 0;
-            continue;
-        }
-
-        view.count++;
+        index += match_length;
     }
 
-    stringbuilder_clean(&delim_buffer);
-
-    return idx;
+    return -1;
 }
 
-size_t get_last_non_occurence_(const string_t* string, const char* delim)
+int64_t get_last_non_occurrence_(const string_t* string, const char* match)
 {
-    NULL_CHECK(string, 0);
+    NULL_CHECK(string, -1);
 
-    stringbuilder_t delim_buffer = stringbuilder_create();
-    stringview_t view = {string->count_-1, 0, string};
-    size_t delim_len = strlen(delim);
-    size_t idx = 0;
+    if (match == NULL)
+        return -1;
 
-    while((view.start_idx + view.count) > 0)
+    size_t match_length = strlen(match);
+    if (match_length == 0 || match_length >= string->count_)
+        return -1;
+
+    stringview_t window = stringview_create(string, string->count_ - match_length, match_length);
+
+    int64_t index = window.start_idx;
+    while (index > 0)
     {
-        char current_char = view.str_->text_[view.start_idx + view.count];
-        if(!strchr(delim, current_char))
-            break;
+        window.start_idx = index;
 
-        stringbuilder_push_ch(&delim_buffer, current_char);
-        if(vector_get_elem_count(delim_buffer.char_vector_) > delim_len)
-            stringbuilder_reset(&delim_buffer);
+        bool is_found = stringview_compare_cstr(&window, match);
+        if (!is_found)
+          return index;
 
-        if (stringbuilder_compare_cstr(&delim_buffer, delim))
-        {
-            stringbuilder_reset(&delim_buffer);
-            idx = view.start_idx + view.count - 1;
-            view.start_idx -= 1;
-            view.count = 0;
-            continue;
-        }
-
-        view.start_idx--;
+        index -= match_length;
     }
 
-    stringbuilder_clean(&delim_buffer);
-    return idx;
+    return -1;
 }
 
 int qsort_char_compare_(const void* a, const void* b)

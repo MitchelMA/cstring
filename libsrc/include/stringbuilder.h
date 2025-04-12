@@ -5,13 +5,10 @@
 
 #include <vector.h>
 #include "../private/private_macros.h"
+#include "types.h"
 #include "str.h"
 #include "stringview.h"
 
-typedef struct
-{
-    vector_t* char_vector_;
-} stringbuilder_t;
 
 NODISCARD
 stringbuilder_t stringbuilder_create(void);
