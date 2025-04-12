@@ -274,7 +274,7 @@ int64_t string_find_cstr(const string_t* string, const char* match, int occurren
         if (is_found)
         {
             if (occurrence_index <= 0)
-              return letter_index;
+                return letter_index;
 
             occurrence_index--;
             letter_index += match_length;
@@ -369,6 +369,52 @@ string_t string_remove_match(const string_t* string, const char* match)
     vector_clean(view_vector);
     string_t end_string = stringbuilder_build(&end_builder);
     stringbuilder_clean(&end_builder);
+
+    return end_string;
+}
+
+string_t string_replace_match(const string_t* string, const char* match, const char* replace)
+{
+    NULL_CHECK(string, string_empty);
+
+    if (match == NULL || replace == NULL)
+        return string_empty;
+
+    size_t match_length = strlen(match);
+    size_t replacement_length = strlen(replace);
+
+    if (match_length == 0 || replacement_length == 0 || match_length >= string->count_)
+        return string_empty;
+
+    stringbuilder_t builder = stringbuilder_create();
+
+    stringview_t window = stringview_create(string, 0, match_length);
+    size_t anchor = 0;
+    size_t end_idx = string->count_ - (match_length - 1);
+
+    size_t letter_index = 0;
+    while (letter_index < end_idx)
+    {
+        window.start_idx = letter_index;
+        bool is_found = stringview_compare_cstr(&window, match);
+
+        if (is_found)
+        {
+            stringbuilder_append_cstr(&builder, replace);
+            letter_index += match_length;
+            continue;
+        }
+
+        stringbuilder_append_ch(&builder, string->text_[letter_index]);
+        letter_index++;
+    }
+
+    stringview_t remaining_view = stringview_create(string, letter_index, string->count_ - letter_index);
+    if (remaining_view.count > 0)
+        stringbuilder_append_strv(&builder, &remaining_view);
+
+    string_t end_string = stringbuilder_build(&builder);
+    stringbuilder_clean(&builder);
 
     return end_string;
 }
