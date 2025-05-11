@@ -258,7 +258,7 @@ int64_t string_find_cstr(const string_t* string, const char* match, int occurren
 
     size_t match_length = strlen(match);
 
-    if (match_length == 0)
+    if (match_length == 0 || match_length >= string->count_)
         return -1;
 
     stringview_t window = stringview_create(string, 0, match_length);
