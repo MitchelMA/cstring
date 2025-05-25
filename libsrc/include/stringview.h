@@ -11,6 +11,7 @@ NODISCARD
 char* stringview_cstr(const stringview_t* stringview);
 NODISCARD
 string_t stringview_owning(const stringview_t* stringview);
+string_t stringview_as_string(const stringview_t* stringview);
 size_t stringview_length(const stringview_t* stringview);
 
 bool stringview_output(FILE* fd, const stringview_t* stringview);
