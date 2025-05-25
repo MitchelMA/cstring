@@ -111,6 +111,18 @@ string_t stringview_as_string(const stringview_t* stringview)
     };
 }
 
+size_t stringview_to_buffer(const stringview_t* stringview, char* buffer, size_t buffer_len)
+{
+    NULL_CHECK(stringview, 0);
+  
+    size_t copy_count = stringview->count > buffer_len - 1 ? buffer_len - 1 : stringview->count;
+    strncpy(buffer,
+            (stringview->str_->text_ + stringview->start_idx),
+            copy_count);
+    buffer[copy_count] = '\0';
+    return copy_count;
+}
+
 size_t stringview_length(const stringview_t* stringview)
 {
     NULL_CHECK(stringview, 0);
