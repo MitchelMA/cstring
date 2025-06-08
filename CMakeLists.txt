@@ -5,8 +5,7 @@ project(CString
     DESCRIPTION "Veilige string-interactions in C"
     LANGUAGES C)
 
-set(CMAKE_C_STANDARD 17)
-
+# Checking if the CVector target already exists
 if (TARGET CVector)
 else()
     FetchContent_Declare(CVector
@@ -15,10 +14,8 @@ else()
     FetchContent_MakeAvailable(CVector)
 endif()
 
-set(SOURCES_DIR ./libsrc)
-
-add_subdirectory(${SOURCES_DIR})
+add_subdirectory(./libsrc)
 
 target_compile_options(CString
-    PUBLIC
+    PRIVATE 
     -std=gnu17)
