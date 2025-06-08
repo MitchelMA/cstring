@@ -262,7 +262,6 @@ int64_t string_find_cstr(const string_t* string, const char* match, int occurren
         return -1;
 
     stringview_t window = stringview_create(string, 0, match_length);
-    size_t anchor = 0;
     size_t endIdx = string->count_ - (match_length - 1);
 
     size_t letter_index = 0;
@@ -278,7 +277,6 @@ int64_t string_find_cstr(const string_t* string, const char* match, int occurren
 
             occurrence_index--;
             letter_index += match_length;
-            anchor = letter_index;
 
             continue;
         }
@@ -389,7 +387,6 @@ string_t string_replace_match(const string_t* string, const char* match, const c
     stringbuilder_t builder = stringbuilder_create();
 
     stringview_t window = stringview_create(string, 0, match_length);
-    size_t anchor = 0;
     size_t end_idx = string->count_ - (match_length - 1);
 
     size_t letter_index = 0;

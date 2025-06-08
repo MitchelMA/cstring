@@ -5,6 +5,10 @@ project(CString
     DESCRIPTION "Veilige string-interactions in C"
     LANGUAGES C)
 
+if (PROJECT_IS_TOP_LEVEL)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
 # Checking if the CVector target already exists
 if (TARGET CVector)
 else()
@@ -19,3 +23,11 @@ add_subdirectory(./libsrc)
 target_compile_options(CString
     PRIVATE 
     -std=gnu17)
+
+if (PROJECT_IS_TOP_LEVEL)
+    target_compile_options(CString
+        PRIVATE
+        -Wall -Wextra -Wpedantic -pedantic -Wundef
+        $<$<STREQUAL:$<UPPER_CASE:${CMAKE_BUILD_TYPE}>,DEBUG>:-g -ggdb>
+        $<$<STREQUAL:$<UPPER_CASE:${CMAKE_BUILD_TYPE}>,RELEASE>:-Werror -Ofast>)
+endif()
