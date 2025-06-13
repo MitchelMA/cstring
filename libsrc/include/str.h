@@ -55,6 +55,16 @@ NODISCARD
  */
 vector_t* string_split(const string_t* string, const char* delim);
 
+/**
+ * Splits the string for `output_size` count
+ * @param string The string that get's split
+ * @param delim The delimiter
+ * @param output The output array of size `output_size` that contains the delimitted values
+ * @param output_size The size of `output`
+ * @return The amount of processed delimitted values
+ */
+size_t string_split_static(const string_t* string, const char* delim, stringview_t* output, size_t output_size);
+
 void string_sort_alpha(string_t* string);
 void string_sort_alpha_inverse(string_t* string);
 

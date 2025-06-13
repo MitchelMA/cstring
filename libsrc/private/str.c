@@ -332,6 +332,54 @@ vector_t* string_split(const string_t* string, const char* delim)
     return view_vector;
 }
 
+size_t string_split_static(const string_t* string, const char* delim, stringview_t* output, size_t output_size)
+{
+    NULL_CHECK(string, 0);
+
+    if (delim == NULL || output == NULL || output_size == 0)
+        return 0;
+
+    size_t delim_length = strlen(delim);
+
+    if (delim_length == 0 || delim_length >= string->count_)
+        return 0;
+
+    stringview_t window = stringview_create(string, 0, delim_length);
+    size_t anchor_index = 0;
+    size_t end_index = string->count_ - (window.count - 1);
+    size_t processed = 0;
+    size_t index = 0;
+
+    while (index < end_index && processed < output_size)
+    {
+        window.start_idx = index;
+        bool is_found = stringview_compare_cstr(&window, delim);
+
+        if (is_found)
+        {
+            stringview_t anchor_view = stringview_create(string, anchor_index, index - anchor_index);
+
+            if (index > anchor_index)
+            {
+                output[processed] = anchor_view;
+                ++processed;
+            }
+
+            index += delim_length;
+            anchor_index = index;
+            continue;
+        }
+
+        ++index;
+    }
+
+    stringview_t remaining_view = stringview_create(string, anchor_index, string->count_ - anchor_index);
+    if (remaining_view.count > 0 && processed < output_size)
+        output[processed++] = remaining_view;
+
+    return processed;
+}
+
 void string_sort_alpha(string_t* string)
 {
     if (string == NULL || string->text_ == NULL || string->count_ == 0)
