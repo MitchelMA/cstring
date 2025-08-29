@@ -249,6 +249,21 @@ bool string_compare(const string_t* str1, const string_t* str2)
     ) == 0;
 }
 
+bool string_is_palindrome(const string_t* string)
+{
+    NULL_CHECK(string, false);
+
+    size_t check_length = string->count_ / 2 + string->count_ % 2;
+    for (int64_t check_i = 0; check_i < (int64_t)check_length; ++check_i)
+    {
+        int64_t index_from_end = ((int64_t)string->count_ - 1) - check_i;
+        if (string->text_[check_i] != string->text_[index_from_end])
+            return false;
+    }
+
+    return true;
+}
+
 int64_t string_find_cstr(const string_t* string, const char* match, int occurrence_index)
 {
     NULL_CHECK(string, -1);

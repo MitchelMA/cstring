@@ -28,4 +28,6 @@ bool stringview_value_compare(const stringview_t* a, const stringview_t* b);
 
 bool stringview_compare_cstr(const stringview_t* view, const char* cstr);
 
+bool stringview_is_palindrome(const stringview_t* view);
+
 #endif // STRINGVIEW_H__

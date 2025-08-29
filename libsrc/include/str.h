@@ -44,6 +44,7 @@ long long string_atoll(const string_t* string);
 size_t string_atos(const string_t* string);
 
 bool string_compare(const string_t* str1, const string_t* str2);
+bool string_is_palindrome(const string_t* string);
 
 int64_t string_find_cstr(const string_t* string, const char* match, int occurrence_index);
 

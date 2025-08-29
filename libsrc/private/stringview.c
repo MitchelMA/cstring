@@ -243,3 +243,20 @@ bool stringview_compare_cstr(const stringview_t* view, const char* cstr)
         view->count 
     ) == 0;
 }
+
+bool stringview_is_palindrome(const stringview_t* view)
+{
+    NULL_CHECK(view, false);
+
+    size_t view_length = stringview_length(view);
+    size_t check_length = view_length / 2 + view_length % 2;
+
+    for (int64_t check_i = 0; check_i < (int64_t)check_length; ++check_i)
+    {
+        int64_t index_from_end = ((int64_t)view_length - 1) - check_i;
+        if (view->str_->text_[view->start_idx + check_i] != view->str_->text_[view->start_idx + index_from_end])
+            return false;
+    }
+
+    return true;
+}
