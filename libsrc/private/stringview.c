@@ -249,7 +249,7 @@ bool stringview_is_palindrome(const stringview_t* view)
     NULL_CHECK(view, false);
 
     size_t view_length = stringview_length(view);
-    size_t check_length = view_length / 2 + view_length % 2;
+    size_t check_length = view_length / 2;
 
     for (int64_t check_i = 0; check_i < (int64_t)check_length; ++check_i)
     {
