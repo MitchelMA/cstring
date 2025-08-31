@@ -270,10 +270,10 @@ string_t stringbuilder_build_immediate(stringbuilder_t* str_builder)
 
     size_t elem_count = vector_get_elem_count(str_builder->char_vector_);
     char* char_buffer = vector_clean_release(str_builder->char_vector_);
-    str_builder->char_vector_ = NULL;
     if (char_buffer == NULL)
         return string_empty;
 
+    str_builder->char_vector_ = NULL;
     return (string_t){elem_count, char_buffer};
 }
 
