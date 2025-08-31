@@ -29,5 +29,5 @@ if (PROJECT_IS_TOP_LEVEL)
         PRIVATE
         -Wall -Wextra -Wpedantic -pedantic -Wundef
         $<$<STREQUAL:$<UPPER_CASE:${CMAKE_BUILD_TYPE}>,DEBUG>:-g -ggdb>
-        $<$<STREQUAL:$<UPPER_CASE:${CMAKE_BUILD_TYPE}>,RELEASE>:-Werror -Ofast>)
+        $<$<STREQUAL:$<UPPER_CASE:${CMAKE_BUILD_TYPE}>,RELEASE>:-Werror -O3 -ffast-math>)
 endif()

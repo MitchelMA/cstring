@@ -48,6 +48,8 @@ NODISCARD
 char* stringbuilder_build_cstr(const stringbuilder_t* str_builder);
 NODISCARD
 string_t stringbuilder_build(const stringbuilder_t* str_builder);
+NODISCARD
+string_t stringbuilder_build_immediate(stringbuilder_t* str_builder);
 
 void stringbuilder_itoa(stringbuilder_t* str_builder, int value);
 void stringbuilder_ltoa(stringbuilder_t* str_builder, long value);

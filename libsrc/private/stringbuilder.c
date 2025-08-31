@@ -264,6 +264,19 @@ string_t stringbuilder_build(const stringbuilder_t* str_builder)
     return str;
 }
 
+string_t stringbuilder_build_immediate(stringbuilder_t* str_builder)
+{
+    NULL_CHECK(str_builder, string_empty);
+
+    size_t elem_count = vector_get_elem_count(str_builder->char_vector_);
+    char* char_buffer = vector_clean_release(str_builder->char_vector_);
+    str_builder->char_vector_ = NULL;
+    if (char_buffer == NULL)
+        return string_empty;
+
+    return (string_t){elem_count, char_buffer};
+}
+
 void stringbuilder_itoa(stringbuilder_t* str_builder, int value)
 {
     NULL_CHECK_EMPTY(str_builder);
@@ -334,22 +347,8 @@ bool stringbuilder_read(FILE* fstream, stringbuilder_t* str_builder, size_t max_
     if(fstream != stdin)
         exit_cond = EOF;
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-
     while((ch = fgetc(fstream)) != exit_cond && read_count++ < max_read_count)
         vector_append(str_builder->char_vector_, (void*) &ch);
-
-#elif defined(__linux__)
-
-    int filenumber = fileno(fstream);
-    int def_flag = fcntl(filenumber, F_GETFL);
-
-    fcntl(filenumber, F_SETFL, def_flag | O_NONBLOCK);
-    while((ch = fgetc(fstream)) != exit_cond && read_count++ < max_read_count)
-        vector_append(str_builder->char_vector_, (void*) &ch);
-    fcntl(filenumber, F_SETFL, def_flag);
-
-#endif // os-check
 
     return true;
 }
